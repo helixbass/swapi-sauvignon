@@ -1,6 +1,6 @@
-[package]
-name = "swapi-sauvignon"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
+[workspace]
+members = [
+  "swapi-sauvignon",
+  "xtask",
+]
+resolver = "3"
