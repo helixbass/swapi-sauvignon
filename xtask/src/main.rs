@@ -17,12 +17,14 @@ enum Command {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
     match args.command {
         Command::Seed => {
-            seed().await;
+            seed().await?;
         }
     }
+
+    Ok(())
 }
