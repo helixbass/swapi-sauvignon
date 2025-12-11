@@ -115,6 +115,26 @@ async fn seed_planets(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
     let query = query_builder.build();
     query.execute(db_pool).await?;
 
+    let mut query_builder = QueryBuilder::new("INSERT INTO planet_terrains (planet_id, terrain)");
+    query_builder.push_values(
+        planets.iter().flat_map(|planet| {
+            planet
+                .terrains
+                .clone()
+                .unwrap_or_default()
+                .into_iter()
+                .map(|terrain| (planet.id, terrain))
+        }),
+        |mut builder, (planet_id, terrain)| {
+            builder
+                .push_bind(i32::try_from(planet_id).unwrap())
+                .push_bind(terrain);
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
     Ok(())
 }
 
@@ -239,7 +259,7 @@ impl FromStr for Climate {
     }
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug, Type)]
 enum Terrain {
     Desert,
     Grasslands,
