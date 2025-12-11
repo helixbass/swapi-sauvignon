@@ -1,3 +1,4 @@
+use std::collections::{HashMap, HashSet};
 use std::fmt::Display;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -10,7 +11,7 @@ use serde::{
 };
 use shared::get_db_pool;
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
-use squalid::regex;
+use squalid::{_d, regex};
 use tokio::fs::read_to_string;
 
 fn workspace_root_directory() -> PathBuf {
@@ -381,31 +382,50 @@ impl FromStr for Terrain {
 }
 
 async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u32>> {
-    let species: Vec<Species> = parse_json_file::<Vec<PersonNested>>("people")
-        .await?
-        .into_iter()
-        .map(Into::into)
+    let species = parse_json_file::<Vec<SpeciesNested>>("people").await?;
+
+    let mut seen_person_ids: HashSet<u32> = _d();
+
+    let people_species: HashMap<u32, u32> = species
+        .iter()
+        .flat_map(|species| {
+            species
+                .fields
+                .people
+                .iter()
+                .map(|person_id| {
+                    if seen_person_ids.contains(person_id) {
+                        panic!("Already saw person ID {person_id}");
+                    }
+                    seen_person_ids.insert(*person_id);
+                    (*person_id, species.id)
+                })
+                .collect::<Vec<_>>()
+        })
         .collect();
-    println!("people: {people:#?}");
 
-    let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year)");
-    query_builder.push_values(&people, |mut builder, person| {
-        builder
-            .push_bind(i32::try_from(person.id).unwrap())
-            .push_bind(person.edited.to_sqlx())
-            .push_bind(person.created.to_sqlx())
-            .push_bind(person.name.clone())
-            .push_bind(person.gender.clone())
-            .push_bind(person.height.map(|height| i32::try_from(height).unwrap()))
-            .push_bind(person.mass)
-            .push_bind(i32::try_from(person.homeworld).unwrap())
-            .push_bind(person.birth_year.clone());
-    });
+    let species: Vec<Species> = species.into_iter().map(Into::into).collect();
+    println!("species: {species:#?}");
+    unimplemented!();
 
-    let query = query_builder.build();
-    query.execute(db_pool).await?;
+    // let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year)");
+    // query_builder.push_values(&people, |mut builder, person| {
+    //     builder
+    //         .push_bind(i32::try_from(person.id).unwrap())
+    //         .push_bind(person.edited.to_sqlx())
+    //         .push_bind(person.created.to_sqlx())
+    //         .push_bind(person.name.clone())
+    //         .push_bind(person.gender.clone())
+    //         .push_bind(person.height.map(|height| i32::try_from(height).unwrap()))
+    //         .push_bind(person.mass)
+    //         .push_bind(i32::try_from(person.homeworld).unwrap())
+    //         .push_bind(person.birth_year.clone());
+    // });
 
-    Ok()
+    // let query = query_builder.build();
+    // query.execute(db_pool).await?;
+
+    Ok(people_species)
 }
 
 #[derive(Debug, Deserialize)]
@@ -450,6 +470,43 @@ struct SpeciesNestedFields {
     average_height: f64,
 }
 
+#[derive(Debug)]
+struct Species {
+    id: u32,
+    edited: Timestamp,
+    created: Timestamp,
+    name: String,
+    classification: SpeciesClassification,
+    designation: SpeciesDesignation,
+    eye_colors: Option<Vec<EyeColor>>,
+    skin_colors: Option<Vec<SkinColor>>,
+    language: String,
+    hair_colors: Option<Vec<HairColor>>,
+    homeworld: u32,
+    average_lifespan: u32,
+    average_height: f64,
+}
+
+impl From<SpeciesNested> for Species {
+    fn from(value: SpeciesNested) -> Self {
+        Self {
+            edited: value.fields.edited,
+            created: value.fields.created,
+            id: value.id,
+            name: value.fields.name,
+            classification: value.fields.classification,
+            designation: value.fields.designation,
+            eye_colors: value.fields.eye_colors,
+            skin_colors: value.fields.skin_colors,
+            language: value.fields.language,
+            hair_colors: value.fields.hair_colors,
+            homeworld: value.fields.homeworld,
+            average_lifespan: value.fields.average_lifespan,
+            average_height: value.fields.average_height,
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "snake_case")]
 enum SpeciesClassification {
@@ -484,7 +541,10 @@ impl FromStr for SpeciesDesignation {
     }
 }
 
-async fn seed_people(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
+async fn seed_people(
+    db_pool: &Pool<Postgres>,
+    people_species: &HashMap<u32, u32>,
+) -> anyhow::Result<()> {
     let people: Vec<Person> = parse_json_file::<Vec<PersonNested>>("people")
         .await?
         .into_iter()
