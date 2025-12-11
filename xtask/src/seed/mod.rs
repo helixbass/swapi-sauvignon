@@ -164,6 +164,61 @@ impl From<PlanetNested> for Planet {
     }
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PersonNested {
+    fields: PersonNestedFields,
+    #[serde(rename = "pk")]
+    id: u32,
+    #[serde(rename = "model")]
+    _model: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PersonNestedFields {
+    edited: Timestamp,
+    created: Timestamp,
+    name: String,
+    gender: Gender,
+    skin_color: SkinColor,
+    hair_color: HairColor,
+    eye_color: EyeColor,
+}
+
+enum Gender {
+    Male,
+    Female,
+}
+
+enum SkinColor {
+    Caucasian,
+    Black,
+    Asian,
+    Hispanic,
+    Gray,
+}
+
+enum HairColor {
+    Blonde,
+    Brown,
+    Black,
+    Red,
+}
+
+enum EyeColor {
+    Brown,
+    Blue,
+    Green,
+    Hazel,
+    Grey,
+    Amber,
+    Yellow,
+    Golden,
+    Red,
+    Black,
+}
+
 // https://github.com/serde-rs/json/issues/317#issuecomment-300251188
 fn deserialize_from_str<'de, TTarget, TDeserializer>(
     deserializer: TDeserializer,
