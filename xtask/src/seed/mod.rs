@@ -50,9 +50,9 @@ struct PlanetNestedFields {
     #[serde_as(as = "StringWithSeparator::<CommaSpaceSeparator, String>")]
     climates: Vec<String>,
     name: String,
-    #[serde(deserialize_with = "deserialize_surface_water")]
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     surface_water: Option<f64>,
-    #[serde(deserialize_with = "deserialize_diameter")]
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     diameter: Option<u32>,
 }
 
@@ -102,28 +102,17 @@ where
     TTarget::from_str(&str).map_err(de::Error::custom)
 }
 
-fn deserialize_surface_water<'de, TDeserializer>(
+fn deserialize_from_str_or_unknown<'de, TTarget, TDeserializer>(
     deserializer: TDeserializer,
-) -> Result<Option<f64>, TDeserializer::Error>
+) -> Result<Option<TTarget>, TDeserializer::Error>
 where
+    TTarget: FromStr,
+    TTarget::Err: Display,
     TDeserializer: Deserializer<'de>,
 {
     let str = String::deserialize(deserializer)?;
     Ok(match &*str {
         "unknown" => None,
-        str => Some(f64::from_str(str).map_err(de::Error::custom)?),
-    })
-}
-
-fn deserialize_diameter<'de, TDeserializer>(
-    deserializer: TDeserializer,
-) -> Result<Option<u32>, TDeserializer::Error>
-where
-    TDeserializer: Deserializer<'de>,
-{
-    let str = String::deserialize(deserializer)?;
-    Ok(match &*str {
-        "unknown" => None,
-        str => Some(u32::from_str(str).map_err(de::Error::custom)?),
+        str => Some(TTarget::from_str(str).map_err(de::Error::custom)?),
     })
 }
