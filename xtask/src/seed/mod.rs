@@ -50,6 +50,12 @@ pub async fn seed() -> anyhow::Result<()> {
 
     create_tables(&db_pool).await?;
 
+    seed_planets(&db_pool).await?;
+    seed_people(&db_pool).await?;
+    unimplemented!()
+}
+
+async fn seed_planets(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
     let planets: Vec<Planet> = parse_json_file::<Vec<PlanetNested>>("planets")
         .await?
         .into_iter()
@@ -85,8 +91,9 @@ pub async fn seed() -> anyhow::Result<()> {
     });
 
     let query = query_builder.build();
-    query.execute(&db_pool).await?;
-    unimplemented!()
+    query.execute(db_pool).await?;
+
+    Ok(())
 }
 
 #[derive(Debug, Deserialize)]
@@ -164,6 +171,17 @@ impl From<PlanetNested> for Planet {
     }
 }
 
+async fn seed_people(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
+    let people: Vec<Person> = parse_json_file::<Vec<PersonNested>>("people")
+        .await?
+        .into_iter()
+        .map(Into::into)
+        .collect();
+    println!("people: {people:#?}");
+
+    Ok(())
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct PersonNested {
@@ -180,32 +198,138 @@ struct PersonNestedFields {
     edited: Timestamp,
     created: Timestamp,
     name: String,
-    gender: Gender,
-    skin_color: SkinColor,
-    hair_color: HairColor,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    gender: Option<Gender>,
+    #[serde(
+        rename = "skin_color",
+        deserialize_with = "deserialize_comma_separated_or_unknown"
+    )]
+    skin_colors: Option<Vec<SkinColor>>,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    hair_color: Option<HairColor>,
+    #[serde(deserialize_with = "deserialize_from_str")]
+    height: u32,
     eye_color: EyeColor,
+    #[serde(deserialize_with = "deserialize_from_str")]
+    mass: f64,
+    homeworld: u32,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    birth_year: Option<String>,
 }
 
+#[derive(Debug)]
+struct Person {
+    edited: Timestamp,
+    created: Timestamp,
+    id: u32,
+    name: String,
+    gender: Option<Gender>,
+    skin_colors: Option<Vec<SkinColor>>,
+    hair_color: Option<HairColor>,
+    height: u32,
+    eye_color: EyeColor,
+    mass: f64,
+    homeworld: u32,
+    birth_year: Option<String>,
+}
+
+impl From<PersonNested> for Person {
+    fn from(value: PersonNested) -> Self {
+        Self {
+            edited: value.fields.edited,
+            created: value.fields.created,
+            id: value.id,
+            name: value.fields.name,
+            gender: value.fields.gender,
+            skin_colors: value.fields.skin_colors,
+            hair_color: value.fields.hair_color,
+            height: value.fields.height,
+            eye_color: value.fields.eye_color,
+            mass: value.fields.mass,
+            homeworld: value.fields.homeworld,
+            birth_year: value.fields.birth_year,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
 enum Gender {
     Male,
     Female,
 }
 
+impl FromStr for Gender {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "male" => Ok(Self::Male),
+            "female" => Ok(Self::Female),
+            _ => Err("Unknown gender"),
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
 enum SkinColor {
     Caucasian,
     Black,
     Asian,
     Hispanic,
     Gray,
+    Fair,
+    Gold,
+    White,
+    Blue,
 }
 
+impl FromStr for SkinColor {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "caucasian" => Ok(Self::Caucasian),
+            "black" => Ok(Self::Black),
+            "asian" => Ok(Self::Asian),
+            "hispanic" => Ok(Self::Hispanic),
+            "gray" => Ok(Self::Gray),
+            "fair" => Ok(Self::Fair),
+            "gold" => Ok(Self::Gold),
+            "white" => Ok(Self::White),
+            "blue" => Ok(Self::Blue),
+            _ => Err("Unknown skin color"),
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
 enum HairColor {
+    #[serde(alias = "blond")]
     Blonde,
     Brown,
     Black,
     Red,
 }
 
+impl FromStr for HairColor {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "blonde" | "blond" => Ok(Self::Blonde),
+            "brown" => Ok(Self::Brown),
+            "black" => Ok(Self::Black),
+            "red" => Ok(Self::Red),
+            _ => Err("Unknown hair color"),
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
 enum EyeColor {
     Brown,
     Blue,
@@ -242,24 +366,26 @@ where
 {
     let str = String::deserialize(deserializer)?;
     Ok(match &*str {
-        "unknown" => None,
+        "unknown" | "n/a" => None,
         str => Some(TTarget::from_str(str).map_err(de::Error::custom)?),
     })
 }
 
-fn deserialize_comma_separated_or_unknown<'de, TDeserializer>(
+fn deserialize_comma_separated_or_unknown<'de, TTarget, TDeserializer>(
     deserializer: TDeserializer,
-) -> Result<Option<Vec<String>>, TDeserializer::Error>
+) -> Result<Option<Vec<TTarget>>, TDeserializer::Error>
 where
+    TTarget: FromStr,
+    TTarget::Err: Display,
     TDeserializer: Deserializer<'de>,
 {
     let str = String::deserialize(deserializer)?;
     Ok(match &*str {
-        "unknown" => None,
+        "unknown" | "n/a" => None,
         str => Some(
             str.split(", ")
                 .map(|chunk| match regex!(r#"^[^,]+$"#).is_match(chunk) {
-                    true => Ok(chunk.to_owned()),
+                    true => TTarget::from_str(chunk).map_err(|_| ".from_str() failed"),
                     false => Err("Unexpected format"),
                 })
                 .collect::<Result<Vec<_>, _>>()
