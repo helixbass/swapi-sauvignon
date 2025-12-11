@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 use jiff::Timestamp;
+use jiff_sqlx::ToSqlx;
 use serde::{
     de::{self, DeserializeOwned, Deserializer},
     Deserialize,
@@ -60,8 +61,8 @@ pub async fn seed() -> anyhow::Result<()> {
     query_builder.push_values(planets, |mut builder, planet| {
         builder
             .push_bind(i32::try_from(planet.id).unwrap())
-            .push_bind(planet.edited)
-            .push_bind(planet.created)
+            .push_bind(planet.edited.to_sqlx())
+            .push_bind(planet.created.to_sqlx())
             .push_bind(planet.name)
             .push_bind(planet.surface_water)
             .push_bind(

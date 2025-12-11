@@ -864,6 +864,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "jiff-sqlx"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cad0aaf716e798876e02217ae420bd730370a175ffd59870018c4aa4daa1513e"
+dependencies = [
+ "jiff",
+ "sqlx-core",
+ "sqlx-postgres",
+]
+
+[[package]]
 name = "jiff-static"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2430,6 +2441,7 @@ dependencies = [
  "anyhow",
  "clap",
  "jiff",
+ "jiff-sqlx",
  "regex",
  "serde",
  "serde_json",
