@@ -117,7 +117,7 @@ struct PlanetNestedFields {
         rename = "climate",
         deserialize_with = "deserialize_comma_separated_or_unknown"
     )]
-    climates: Option<Vec<String>>,
+    climates: Option<Vec<Climate>>,
     name: String,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     surface_water: Option<f64>,
@@ -129,7 +129,7 @@ struct PlanetNestedFields {
         rename = "terrain",
         deserialize_with = "deserialize_comma_separated_or_unknown"
     )]
-    terrains: Option<Vec<String>>,
+    terrains: Option<Vec<Terrain>>,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     gravity: Option<String>,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
@@ -142,13 +142,13 @@ struct PlanetNestedFields {
 struct Planet {
     edited: Timestamp,
     created: Timestamp,
-    climates: Option<Vec<String>>,
+    climates: Option<Vec<Climate>>,
     id: u32,
     name: String,
     surface_water: Option<f64>,
     diameter: Option<u32>,
     rotation_period: Option<u32>,
-    terrains: Option<Vec<String>>,
+    terrains: Option<Vec<Terrain>>,
     gravity: Option<String>,
     orbital_period: Option<u32>,
     population: Option<f64>,
@@ -169,6 +169,166 @@ impl From<PlanetNested> for Planet {
             gravity: value.fields.gravity,
             orbital_period: value.fields.orbital_period,
             population: value.fields.population,
+        }
+    }
+}
+
+#[derive(Debug)]
+enum Climate {
+    Arid,
+    Temperate,
+    Tropical,
+    Frozen,
+    Murky,
+    Windy,
+    Hot,
+    ArtificialTemperate,
+    Frigid,
+    Humid,
+    Moist,
+    Polluted,
+    Superheated,
+    Subarctic,
+    Arctic,
+    Rocky,
+}
+
+impl FromStr for Climate {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "arid" => Ok(Self::Arid),
+            "temperate" => Ok(Self::Temperate),
+            "tropical" => Ok(Self::Tropical),
+            "frozen" => Ok(Self::Frozen),
+            "murky" => Ok(Self::Murky),
+            "windy" => Ok(Self::Windy),
+            "hot" => Ok(Self::Hot),
+            "artificial temperate" => Ok(Self::ArtificialTemperate),
+            "frigid" => Ok(Self::Frigid),
+            "humid" => Ok(Self::Humid),
+            "moist" => Ok(Self::Moist),
+            "polluted" => Ok(Self::Polluted),
+            "superheated" => Ok(Self::Superheated),
+            "subartic" => Ok(Self::Subarctic),
+            "artic" => Ok(Self::Arctic),
+            "rocky" => Ok(Self::Rocky),
+            _ => Err("Unknown climate"),
+        }
+    }
+}
+
+#[derive(Debug)]
+enum Terrain {
+    Desert,
+    Grasslands,
+    Mountains,
+    Jungle,
+    Rainforests,
+    Tundra,
+    IceCaves,
+    MountainRanges,
+    Swamp,
+    GasGiant,
+    Forests,
+    Lakes,
+    GrassyHills,
+    Cityscape,
+    Ocean,
+    Rock,
+    Barren,
+    Scrublands,
+    Savanna,
+    Canyons,
+    Sinkholes,
+    Volcanoes,
+    LavaRivers,
+    Caves,
+    Rivers,
+    AirlessAsteroid,
+    Glaciers,
+    IceCanyons,
+    FungusForests,
+    Fields,
+    RockArches,
+    Grass,
+    Plains,
+    Urban,
+    Hills,
+    Bogs,
+    RockyIslands,
+    Seas,
+    Mesas,
+    Islands,
+    Reefs,
+    RockyDeserts,
+    Valleys,
+    Ash,
+    ToxicCloudsea,
+    Plateaus,
+    Verdant,
+    RockyCanyons,
+    AcidPools,
+    Rocky,
+}
+
+impl FromStr for Terrain {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "desert" | "deserts" => Ok(Self::Desert),
+            "grasslands" => Ok(Self::Grasslands),
+            "mountains" | "mountain" => Ok(Self::Mountains),
+            "jungle" | "jungles" => Ok(Self::Jungle),
+            "rainforests" => Ok(Self::Rainforests),
+            "tundra" => Ok(Self::Tundra),
+            "ice caves" => Ok(Self::IceCaves),
+            "mountain ranges" => Ok(Self::MountainRanges),
+            "swamp" | "swamps" => Ok(Self::Swamp),
+            "gas giant" => Ok(Self::GasGiant),
+            "forests" => Ok(Self::Forests),
+            "lakes" => Ok(Self::Lakes),
+            "grassy hills" => Ok(Self::GrassyHills),
+            "cityscape" => Ok(Self::Cityscape),
+            "ocean" | "oceans" => Ok(Self::Ocean),
+            "rock" => Ok(Self::Rock),
+            "barren" => Ok(Self::Barren),
+            "scrublands" => Ok(Self::Scrublands),
+            "savanna" | "savannas" => Ok(Self::Savanna),
+            "canyons" => Ok(Self::Canyons),
+            "sinkholes" => Ok(Self::Sinkholes),
+            "volcanoes" => Ok(Self::Volcanoes),
+            "lava rivers" => Ok(Self::LavaRivers),
+            "caves" => Ok(Self::Caves),
+            "rivers" => Ok(Self::Rivers),
+            "airless asteroid" => Ok(Self::AirlessAsteroid),
+            "glaciers" => Ok(Self::Glaciers),
+            "ice canyons" => Ok(Self::IceCanyons),
+            "fungus forests" => Ok(Self::FungusForests),
+            "fields" => Ok(Self::Fields),
+            "rock arches" => Ok(Self::RockArches),
+            "grass" => Ok(Self::Grass),
+            "plains" => Ok(Self::Plains),
+            "urban" => Ok(Self::Urban),
+            "hills" => Ok(Self::Hills),
+            "bogs" => Ok(Self::Bogs),
+            "rocky islands" => Ok(Self::RockyIslands),
+            "seas" => Ok(Self::Seas),
+            "mesas" => Ok(Self::Mesas),
+            "islands" => Ok(Self::Islands),
+            "reefs" => Ok(Self::Reefs),
+            "rocky deserts" => Ok(Self::RockyDeserts),
+            "valleys" => Ok(Self::Valleys),
+            "ash" => Ok(Self::Ash),
+            "toxic cloudsea" => Ok(Self::ToxicCloudsea),
+            "plateaus" => Ok(Self::Plateaus),
+            "verdant" => Ok(Self::Verdant),
+            "rocky canyons" => Ok(Self::RockyCanyons),
+            "acid pools" => Ok(Self::AcidPools),
+            "rocky" => Ok(Self::Rocky),
+            _ => Err("Unknown terrain"),
         }
     }
 }
