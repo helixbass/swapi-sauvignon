@@ -9,7 +9,7 @@ use serde::{
     Deserialize,
 };
 use shared::get_db_pool;
-use sqlx::{Pool, Postgres, QueryBuilder};
+use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::regex;
 use tokio::fs::read_to_string;
 
@@ -179,6 +179,23 @@ async fn seed_people(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .collect();
     println!("people: {people:#?}");
 
+    let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year)");
+    query_builder.push_values(people, |mut builder, person| {
+        builder
+            .push_bind(i32::try_from(person.id).unwrap())
+            .push_bind(person.edited.to_sqlx())
+            .push_bind(person.created.to_sqlx())
+            .push_bind(person.name)
+            .push_bind(person.gender)
+            .push_bind(person.height.map(|height| i32::try_from(height).unwrap()))
+            .push_bind(person.mass)
+            .push_bind(i32::try_from(person.homeworld).unwrap())
+            .push_bind(person.birth_year);
+    });
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
     Ok(())
 }
 
@@ -259,7 +276,7 @@ impl From<PersonNested> for Person {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Type)]
 #[serde(rename_all = "snake_case")]
 enum Gender {
     Male,
