@@ -99,18 +99,20 @@ CREATE TABLE planet_terrains (
   terrain terrain NOT NULL
 );
 
-CREATE TYPE gender AS ENUM ('Male', 'Female', 'Hermaphrodite');
+CREATE TYPE speciesclassification AS ENUM (
+  'Mammal',
+  'Artificial',
+  'Sentient',
+  'Gastropod',
+  'Reptile',
+  'Amphibian',
+  'Insectoid',
+  'Reptilian'
+);
 
-CREATE TABLE people (
-  id INT PRIMARY KEY NOT NULL,
-  edited TIMESTAMPTZ NOT NULL,
-  created TIMESTAMPTZ NOT NULL,
-  name TEXT NOT NULL,
-  gender gender,
-  height INTEGER,
-  mass FLOAT,
-  homeworld integer REFERENCES planets (id) NOT NULL,
-  birth_year TEXT
+CREATE TYPE speciesdesignation AS ENUM (
+  'Sentient',
+  'Reptilian'
 );
 
 CREATE TYPE skincolor AS ENUM (
@@ -144,12 +146,6 @@ CREATE TYPE skincolor AS ENUM (
   'Peach'
 );
 
-CREATE TABLE person_skin_colors (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  person_id integer REFERENCES people (id) NOT NULL,
-  skin_color skincolor NOT NULL
-);
-
 CREATE TYPE eyecolor AS ENUM (
   'Brown',
   'Blue',
@@ -170,12 +166,6 @@ CREATE TYPE eyecolor AS ENUM (
   'Silver'
 );
 
-CREATE TABLE person_eye_colors (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  person_id integer REFERENCES people (id) NOT NULL,
-  eye_color eyecolor NOT NULL
-);
-
 CREATE TYPE haircolor AS ENUM (
   'Blonde',
   'Brown',
@@ -184,6 +174,62 @@ CREATE TYPE haircolor AS ENUM (
   'Grey',
   'Auburn',
   'White'
+);
+
+CREATE TABLE species (
+  id INT PRIMARY KEY NOT NULL,
+  edited TIMESTAMPTZ NOT NULL,
+  created TIMESTAMPTZ NOT NULL,
+  name TEXT NOT NULL,
+  classification speciesclassification,
+  designation speciesdesignation NOT NULL,
+  homeworld integer REFERENCES planets (id),
+  average_lifespan INTEGER,
+  average_height FLOAT
+);
+
+CREATE TABLE species_skin_colors (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  species_id integer REFERENCES species (id) NOT NULL,
+  skin_color skincolor NOT NULL
+);
+
+CREATE TABLE species_eye_colors (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  species_id integer REFERENCES species (id) NOT NULL,
+  eye_color eyecolor NOT NULL
+);
+
+CREATE TABLE species_hair_colors (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  species_id integer REFERENCES species (id) NOT NULL,
+  hair_color haircolor NOT NULL
+);
+
+CREATE TYPE gender AS ENUM ('Male', 'Female', 'Hermaphrodite');
+
+CREATE TABLE people (
+  id INT PRIMARY KEY NOT NULL,
+  edited TIMESTAMPTZ NOT NULL,
+  created TIMESTAMPTZ NOT NULL,
+  name TEXT NOT NULL,
+  gender gender,
+  height INTEGER,
+  mass FLOAT,
+  homeworld integer REFERENCES planets (id) NOT NULL,
+  birth_year TEXT
+);
+
+CREATE TABLE person_skin_colors (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  person_id integer REFERENCES people (id) NOT NULL,
+  skin_color skincolor NOT NULL
+);
+
+CREATE TABLE person_eye_colors (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  person_id integer REFERENCES people (id) NOT NULL,
+  eye_color eyecolor NOT NULL
 );
 
 CREATE TABLE person_hair_colors (

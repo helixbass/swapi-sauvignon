@@ -406,24 +406,85 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
 
     let species: Vec<Species> = species.into_iter().map(Into::into).collect();
     println!("species: {species:#?}");
-    unimplemented!();
 
-    // let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year)");
-    // query_builder.push_values(&people, |mut builder, person| {
-    //     builder
-    //         .push_bind(i32::try_from(person.id).unwrap())
-    //         .push_bind(person.edited.to_sqlx())
-    //         .push_bind(person.created.to_sqlx())
-    //         .push_bind(person.name.clone())
-    //         .push_bind(person.gender.clone())
-    //         .push_bind(person.height.map(|height| i32::try_from(height).unwrap()))
-    //         .push_bind(person.mass)
-    //         .push_bind(i32::try_from(person.homeworld).unwrap())
-    //         .push_bind(person.birth_year.clone());
-    // });
+    let mut query_builder = QueryBuilder::new("INSERT INTO species (id, edited, created, name, classification, designation, homeworld, average_lifespan, average_height)");
+    query_builder.push_values(&species, |mut builder, species| {
+        builder
+            .push_bind(i32::try_from(species.id).unwrap())
+            .push_bind(species.edited.to_sqlx())
+            .push_bind(species.created.to_sqlx())
+            .push_bind(species.name.clone())
+            .push_bind(species.classification.clone())
+            .push_bind(species.designation.clone())
+            .push_bind(
+                species
+                    .homeworld
+                    .map(|homeworld| i32::try_from(homeworld).unwrap()),
+            )
+            .push_bind(
+                species
+                    .average_lifespan
+                    .map(|average_lifespan| i32::try_from(average_lifespan).unwrap()),
+            )
+            .push_bind(species.average_height);
+    });
 
-    // let query = query_builder.build();
-    // query.execute(db_pool).await?;
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder =
+        QueryBuilder::new("INSERT INTO species_skin_colors (species_id, skin_color)");
+    query_builder.push_values(
+        species.iter().flat_map(|species| {
+            species
+                .skin_colors
+                .clone()
+                .unwrap_or_default()
+                .into_iter()
+                .map(|skin_color| (species.id, skin_color))
+        }),
+        |mut builder, (species_id, skin_color)| {
+            builder
+                .push_bind(i32::try_from(species_id).unwrap())
+                .push_bind(skin_color);
+        },
+    );
+
+    let mut query_builder =
+        QueryBuilder::new("INSERT INTO species_eye_colors (species_id, eye_color)");
+    query_builder.push_values(
+        species.iter().flat_map(|species| {
+            species
+                .eye_colors
+                .clone()
+                .unwrap_or_default()
+                .into_iter()
+                .map(|eye_color| (species.id, eye_color))
+        }),
+        |mut builder, (species_id, eye_color)| {
+            builder
+                .push_bind(i32::try_from(species_id).unwrap())
+                .push_bind(eye_color);
+        },
+    );
+
+    let mut query_builder =
+        QueryBuilder::new("INSERT INTO species_hair_colors (species_id, hair_color)");
+    query_builder.push_values(
+        species.iter().flat_map(|species| {
+            species
+                .hair_colors
+                .clone()
+                .unwrap_or_default()
+                .into_iter()
+                .map(|hair_color| (species.id, hair_color))
+        }),
+        |mut builder, (species_id, hair_color)| {
+            builder
+                .push_bind(i32::try_from(species_id).unwrap())
+                .push_bind(hair_color);
+        },
+    );
 
     Ok(people_species)
 }
@@ -500,7 +561,7 @@ impl From<SpeciesNested> for Species {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Copy, Clone, Debug, Deserialize, Type)]
 #[serde(rename_all = "snake_case")]
 enum SpeciesClassification {
     Mammal,
@@ -531,7 +592,7 @@ impl FromStr for SpeciesClassification {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Copy, Clone, Debug, Deserialize, Type)]
 #[serde(rename_all = "snake_case")]
 enum SpeciesDesignation {
     Sentient,
