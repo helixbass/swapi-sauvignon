@@ -54,6 +54,8 @@ struct PlanetNestedFields {
     surface_water: Option<f64>,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     diameter: Option<u32>,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    rotation_period: Option<u32>,
 }
 
 #[derive(Debug)]
@@ -65,6 +67,7 @@ struct Planet {
     name: String,
     surface_water: Option<f64>,
     diameter: Option<u32>,
+    rotation_period: Option<u32>,
 }
 
 impl From<PlanetNested> for Planet {
@@ -77,6 +80,7 @@ impl From<PlanetNested> for Planet {
             name: value.fields.name,
             surface_water: value.fields.surface_water,
             diameter: value.fields.diameter,
+            rotation_period: value.fields.rotation_period,
         }
     }
 }
