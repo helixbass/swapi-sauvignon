@@ -53,7 +53,8 @@ pub async fn seed() -> anyhow::Result<()> {
     create_tables(&db_pool).await?;
 
     seed_planets(&db_pool).await?;
-    seed_people(&db_pool).await?;
+    let people_species = seed_species(&db_pool).await?;
+    seed_people(&db_pool, &people_species).await?;
     unimplemented!()
 }
 
@@ -375,6 +376,110 @@ impl FromStr for Terrain {
             "cities" => Ok(Self::Cities),
             "cliffs" => Ok(Self::Cliffs),
             _ => Err("Unknown terrain"),
+        }
+    }
+}
+
+async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u32>> {
+    let species: Vec<Species> = parse_json_file::<Vec<PersonNested>>("people")
+        .await?
+        .into_iter()
+        .map(Into::into)
+        .collect();
+    println!("people: {people:#?}");
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year)");
+    query_builder.push_values(&people, |mut builder, person| {
+        builder
+            .push_bind(i32::try_from(person.id).unwrap())
+            .push_bind(person.edited.to_sqlx())
+            .push_bind(person.created.to_sqlx())
+            .push_bind(person.name.clone())
+            .push_bind(person.gender.clone())
+            .push_bind(person.height.map(|height| i32::try_from(height).unwrap()))
+            .push_bind(person.mass)
+            .push_bind(i32::try_from(person.homeworld).unwrap())
+            .push_bind(person.birth_year.clone());
+    });
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    Ok()
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct SpeciesNested {
+    fields: SpeciesNestedFields,
+    #[serde(rename = "pk")]
+    id: u32,
+    #[serde(rename = "model")]
+    _model: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct SpeciesNestedFields {
+    edited: Timestamp,
+    created: Timestamp,
+    name: String,
+    classification: SpeciesClassification,
+    designation: SpeciesDesignation,
+    #[serde(
+        rename = "eye_color",
+        deserialize_with = "deserialize_comma_separated_or_unknown"
+    )]
+    eye_colors: Option<Vec<EyeColor>>,
+    people: Vec<u32>,
+    #[serde(
+        rename = "skin_color",
+        deserialize_with = "deserialize_comma_separated_or_unknown"
+    )]
+    skin_colors: Option<Vec<SkinColor>>,
+    language: String,
+    #[serde(
+        rename = "hair_color",
+        deserialize_with = "deserialize_comma_separated_or_unknown"
+    )]
+    hair_colors: Option<Vec<HairColor>>,
+    homeworld: u32,
+    #[serde(deserialize_with = "deserialize_from_str")]
+    average_lifespan: u32,
+    #[serde(deserialize_with = "deserialize_from_str")]
+    average_height: f64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum SpeciesClassification {
+    Mammal,
+}
+
+impl FromStr for SpeciesClassification {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "mammal" => Ok(Self::Mammal),
+            _ => Err("Unknown species classification"),
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum SpeciesDesignation {
+    Sentient,
+}
+
+impl FromStr for SpeciesDesignation {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "sentient" => Ok(Self::Sentient),
+            _ => Err("Unknown species designation"),
         }
     }
 }
