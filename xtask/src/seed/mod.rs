@@ -41,7 +41,9 @@ fn sql_file_path(file_name_root: &str) -> PathBuf {
 
 async fn create_tables(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
     let sql = read_to_string(sql_file_path("create_tables")).await?;
-    sqlx::query(&sql).execute(db_pool).await?;
+    for command in sql.split("\n\n") {
+        sqlx::query(command).execute(db_pool).await?;
+    }
     Ok(())
 }
 

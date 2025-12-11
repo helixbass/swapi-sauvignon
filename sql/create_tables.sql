@@ -23,5 +23,5 @@ CREATE TABLE people (
   height INTEGER,
   mass FLOAT,
   homeworld integer REFERENCES planets (id) NOT NULL,
-  birth_year TEXT,
+  birth_year TEXT
 );
