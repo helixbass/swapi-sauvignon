@@ -8,7 +8,7 @@ use serde::{
     Deserialize,
 };
 use shared::get_db_pool;
-use sqlx::{Pool, Postgres};
+use sqlx::{Pool, Postgres, QueryBuilder};
 use squalid::regex;
 use tokio::fs::read_to_string;
 
@@ -46,13 +46,45 @@ async fn create_tables(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
 
 pub async fn seed() -> anyhow::Result<()> {
     let db_pool = get_db_pool().await?;
+
     create_tables(&db_pool).await?;
+
     let planets: Vec<Planet> = parse_json_file::<Vec<PlanetNested>>("planets")
         .await?
         .into_iter()
         .map(Into::into)
         .collect();
     println!("planets: {planets:#?}");
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO planets (id, edited, created, name, surface_water, diameter, rotation_period, gravity, orbital_period, population)");
+    query_builder.push_values(planets, |mut builder, planet| {
+        builder
+            .push_bind(i32::try_from(planet.id).unwrap())
+            .push_bind(planet.edited)
+            .push_bind(planet.created)
+            .push_bind(planet.name)
+            .push_bind(planet.surface_water)
+            .push_bind(
+                planet
+                    .diameter
+                    .map(|diameter| i32::try_from(diameter).unwrap()),
+            )
+            .push_bind(
+                planet
+                    .rotation_period
+                    .map(|rotation_period| i32::try_from(rotation_period).unwrap()),
+            )
+            .push_bind(planet.gravity)
+            .push_bind(
+                planet
+                    .orbital_period
+                    .map(|orbital_period| i32::try_from(orbital_period).unwrap()),
+            )
+            .push_bind(planet.population);
+    });
+
+    let query = query_builder.build();
+    query.execute(&db_pool).await?;
     unimplemented!()
 }
 
