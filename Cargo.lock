@@ -2192,6 +2192,11 @@ name = "swapi-sauvignon"
 version = "0.1.0"
 dependencies = [
  "sauvignon",
+ "serde",
+ "serde_json",
+ "shared",
+ "sqlx",
+ "tokio",
 ]
 
 [[package]]

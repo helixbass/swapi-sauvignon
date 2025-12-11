@@ -1,4 +1,5 @@
-use sauvignon::{schema, Schema};
+use sauvignon::{schema, Response, Schema};
+use sqlx::{Pool, Postgres};
 
 pub fn get_schema() -> Schema {
     schema! {
@@ -18,4 +19,8 @@ pub fn get_schema() -> Schema {
             }
         ]
     }
+}
+
+pub async fn request(document_str: &str, schema: &Schema, db_pool: &Pool<Postgres>) -> Response {
+    schema.request(document_str, db_pool).await
 }

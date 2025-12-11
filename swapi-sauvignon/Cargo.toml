@@ -5,3 +5,10 @@ edition = "2024"
 
 [dependencies]
 sauvignon = { path = "../../sauvignon" }
+sqlx = { workspace = true }
+tokio = { workspace = true }
+
+[dev-dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+shared = { path = "../shared" }
