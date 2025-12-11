@@ -35,13 +35,17 @@ pub async fn seed() -> anyhow::Result<()> {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 struct PlanetNested {
     fields: PlanetNestedFields,
     #[serde(rename = "pk")]
     id: u32,
+    #[serde(rename = "model")]
+    _model: String,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 struct PlanetNestedFields {
     edited: Timestamp,
     created: Timestamp,
@@ -66,6 +70,8 @@ struct PlanetNestedFields {
     gravity: Option<String>,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     orbital_period: Option<u32>,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    population: Option<f64>,
 }
 
 #[derive(Debug)]
@@ -81,6 +87,7 @@ struct Planet {
     terrains: Option<Vec<String>>,
     gravity: Option<String>,
     orbital_period: Option<u32>,
+    population: Option<f64>,
 }
 
 impl From<PlanetNested> for Planet {
@@ -97,6 +104,7 @@ impl From<PlanetNested> for Planet {
             terrains: value.fields.terrains,
             gravity: value.fields.gravity,
             orbital_period: value.fields.orbital_period,
+            population: value.fields.population,
         }
     }
 }
