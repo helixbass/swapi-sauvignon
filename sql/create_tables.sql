@@ -136,7 +136,12 @@ CREATE TYPE skincolor AS ENUM (
   'Orange',
   'Yellow',
   'Tan',
-  'Silver'
+  'Silver',
+  'Magenta',
+  'Purple',
+  'Pink',
+  'PalePink',
+  'Peach'
 );
 
 CREATE TABLE person_skin_colors (
@@ -160,7 +165,9 @@ CREATE TYPE eyecolor AS ENUM (
   'Orange',
   'Pink',
   'Gold',
-  'White'
+  'White',
+  'Indigo',
+  'Silver'
 );
 
 CREATE TABLE person_eye_colors (

@@ -382,7 +382,7 @@ impl FromStr for Terrain {
 }
 
 async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u32>> {
-    let species = parse_json_file::<Vec<SpeciesNested>>("people").await?;
+    let species = parse_json_file::<Vec<SpeciesNested>>("species").await?;
 
     let mut seen_person_ids: HashSet<u32> = _d();
 
@@ -444,30 +444,23 @@ struct SpeciesNestedFields {
     edited: Timestamp,
     created: Timestamp,
     name: String,
-    classification: SpeciesClassification,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    classification: Option<SpeciesClassification>,
     designation: SpeciesDesignation,
-    #[serde(
-        rename = "eye_color",
-        deserialize_with = "deserialize_comma_separated_or_unknown"
-    )]
+    #[serde(deserialize_with = "deserialize_comma_separated_or_unknown")]
     eye_colors: Option<Vec<EyeColor>>,
     people: Vec<u32>,
-    #[serde(
-        rename = "skin_color",
-        deserialize_with = "deserialize_comma_separated_or_unknown"
-    )]
+    #[serde(deserialize_with = "deserialize_comma_separated_or_unknown")]
     skin_colors: Option<Vec<SkinColor>>,
-    language: String,
-    #[serde(
-        rename = "hair_color",
-        deserialize_with = "deserialize_comma_separated_or_unknown"
-    )]
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    language: Option<String>,
+    #[serde(deserialize_with = "deserialize_comma_separated_or_unknown")]
     hair_colors: Option<Vec<HairColor>>,
-    homeworld: u32,
-    #[serde(deserialize_with = "deserialize_from_str")]
-    average_lifespan: u32,
-    #[serde(deserialize_with = "deserialize_from_str")]
-    average_height: f64,
+    homeworld: Option<u32>,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    average_lifespan: Option<u32>,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    average_height: Option<f64>,
 }
 
 #[derive(Debug)]
@@ -476,15 +469,15 @@ struct Species {
     edited: Timestamp,
     created: Timestamp,
     name: String,
-    classification: SpeciesClassification,
+    classification: Option<SpeciesClassification>,
     designation: SpeciesDesignation,
     eye_colors: Option<Vec<EyeColor>>,
     skin_colors: Option<Vec<SkinColor>>,
-    language: String,
+    language: Option<String>,
     hair_colors: Option<Vec<HairColor>>,
-    homeworld: u32,
-    average_lifespan: u32,
-    average_height: f64,
+    homeworld: Option<u32>,
+    average_lifespan: Option<u32>,
+    average_height: Option<f64>,
 }
 
 impl From<SpeciesNested> for Species {
@@ -511,6 +504,13 @@ impl From<SpeciesNested> for Species {
 #[serde(rename_all = "snake_case")]
 enum SpeciesClassification {
     Mammal,
+    Artificial,
+    Sentient,
+    Gastropod,
+    Reptile,
+    Amphibian,
+    Insectoid,
+    Reptilian,
 }
 
 impl FromStr for SpeciesClassification {
@@ -518,7 +518,14 @@ impl FromStr for SpeciesClassification {
 
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         match value {
-            "mammal" => Ok(Self::Mammal),
+            "mammal" | "mammals" => Ok(Self::Mammal),
+            "artificial" => Ok(Self::Artificial),
+            "sentient" => Ok(Self::Sentient),
+            "gastropod" => Ok(Self::Gastropod),
+            "reptile" => Ok(Self::Reptile),
+            "amphibian" => Ok(Self::Amphibian),
+            "insectoid" => Ok(Self::Insectoid),
+            "reptilian" => Ok(Self::Reptilian),
             _ => Err("Unknown species classification"),
         }
     }
@@ -528,6 +535,7 @@ impl FromStr for SpeciesClassification {
 #[serde(rename_all = "snake_case")]
 enum SpeciesDesignation {
     Sentient,
+    Reptilian,
 }
 
 impl FromStr for SpeciesDesignation {
@@ -536,6 +544,7 @@ impl FromStr for SpeciesDesignation {
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         match value {
             "sentient" => Ok(Self::Sentient),
+            "reptilian" => Ok(Self::Reptilian),
             _ => Err("Unknown species designation"),
         }
     }
@@ -759,6 +768,11 @@ enum SkinColor {
     Yellow,
     Tan,
     Silver,
+    Magenta,
+    Purple,
+    Pink,
+    PalePink,
+    Peach,
 }
 
 impl FromStr for SkinColor {
@@ -789,6 +803,11 @@ impl FromStr for SkinColor {
             "yellow" => Ok(Self::Yellow),
             "tan" => Ok(Self::Tan),
             "silver" => Ok(Self::Silver),
+            "magenta" => Ok(Self::Magenta),
+            "purple" => Ok(Self::Purple),
+            "pink" => Ok(Self::Pink),
+            "pale pink" => Ok(Self::PalePink),
+            "peach" => Ok(Self::Peach),
             _ => Err("Unknown skin color"),
         }
     }
@@ -842,6 +861,8 @@ enum EyeColor {
     Pink,
     Gold,
     White,
+    Indigo,
+    Silver,
 }
 
 impl FromStr for EyeColor {
@@ -864,6 +885,8 @@ impl FromStr for EyeColor {
             "pink" => Ok(Self::Pink),
             "gold" => Ok(Self::Gold),
             "white" => Ok(Self::White),
+            "indigo" => Ok(Self::Indigo),
+            "silver" => Ok(Self::Silver),
             _ => Err("Unknown eye color"),
         }
     }
@@ -892,7 +915,7 @@ where
 {
     let str = String::deserialize(deserializer)?;
     Ok(match &*str {
-        "unknown" | "n/a" | "none" => None,
+        "unknown" | "n/a" | "none" | "indefinite" => None,
         str => Some(TTarget::from_str(str).map_err(de::Error::custom)?),
     })
 }
@@ -907,7 +930,7 @@ where
 {
     let str = String::deserialize(deserializer)?;
     Ok(match &*str {
-        "unknown" | "n/a" | "none" => None,
+        "unknown" | "n/a" | "none" | "indefinite" => None,
         str => Some(
             str.split(", ")
                 .map(|chunk| match regex!(r#"^[^,]+$"#).is_match(chunk) {
