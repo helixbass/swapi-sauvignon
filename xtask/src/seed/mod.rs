@@ -205,8 +205,11 @@ struct PersonNestedFields {
         deserialize_with = "deserialize_comma_separated_or_unknown"
     )]
     skin_colors: Option<Vec<SkinColor>>,
-    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
-    hair_color: Option<HairColor>,
+    #[serde(
+        rename = "hair_color",
+        deserialize_with = "deserialize_comma_separated_or_unknown"
+    )]
+    hair_colors: Option<Vec<HairColor>>,
     #[serde(deserialize_with = "deserialize_from_str")]
     height: u32,
     eye_color: EyeColor,
@@ -225,7 +228,7 @@ struct Person {
     name: String,
     gender: Option<Gender>,
     skin_colors: Option<Vec<SkinColor>>,
-    hair_color: Option<HairColor>,
+    hair_colors: Option<Vec<HairColor>>,
     height: u32,
     eye_color: EyeColor,
     mass: f64,
@@ -242,7 +245,7 @@ impl From<PersonNested> for Person {
             name: value.fields.name,
             gender: value.fields.gender,
             skin_colors: value.fields.skin_colors,
-            hair_color: value.fields.hair_color,
+            hair_colors: value.fields.hair_colors,
             height: value.fields.height,
             eye_color: value.fields.eye_color,
             mass: value.fields.mass,
@@ -283,6 +286,8 @@ enum SkinColor {
     Gold,
     White,
     Blue,
+    Light,
+    Red,
 }
 
 impl FromStr for SkinColor {
@@ -299,6 +304,8 @@ impl FromStr for SkinColor {
             "gold" => Ok(Self::Gold),
             "white" => Ok(Self::White),
             "blue" => Ok(Self::Blue),
+            "light" => Ok(Self::Light),
+            "red" => Ok(Self::Red),
             _ => Err("Unknown skin color"),
         }
     }
@@ -312,6 +319,9 @@ enum HairColor {
     Brown,
     Black,
     Red,
+    Grey,
+    Auburn,
+    White,
 }
 
 impl FromStr for HairColor {
@@ -323,13 +333,16 @@ impl FromStr for HairColor {
             "brown" => Ok(Self::Brown),
             "black" => Ok(Self::Black),
             "red" => Ok(Self::Red),
+            "grey" => Ok(Self::Grey),
+            "auburn" => Ok(Self::Auburn),
+            "white" => Ok(Self::White),
             _ => Err("Unknown hair color"),
         }
     }
 }
 
 #[derive(Debug, Deserialize)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "kebab-case")]
 enum EyeColor {
     Brown,
     Blue,
@@ -341,6 +354,7 @@ enum EyeColor {
     Golden,
     Red,
     Black,
+    BlueGray,
 }
 
 // https://github.com/serde-rs/json/issues/317#issuecomment-300251188
@@ -366,7 +380,7 @@ where
 {
     let str = String::deserialize(deserializer)?;
     Ok(match &*str {
-        "unknown" | "n/a" => None,
+        "unknown" | "n/a" | "none" => None,
         str => Some(TTarget::from_str(str).map_err(de::Error::custom)?),
     })
 }
@@ -381,7 +395,7 @@ where
 {
     let str = String::deserialize(deserializer)?;
     Ok(match &*str {
-        "unknown" | "n/a" => None,
+        "unknown" | "n/a" | "none" => None,
         str => Some(
             str.split(", ")
                 .map(|chunk| match regex!(r#"^[^,]+$"#).is_match(chunk) {
