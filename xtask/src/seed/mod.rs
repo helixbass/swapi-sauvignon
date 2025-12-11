@@ -388,18 +388,81 @@ async fn seed_people(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
     println!("people: {people:#?}");
 
     let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year)");
-    query_builder.push_values(people, |mut builder, person| {
+    query_builder.push_values(&people, |mut builder, person| {
         builder
             .push_bind(i32::try_from(person.id).unwrap())
             .push_bind(person.edited.to_sqlx())
             .push_bind(person.created.to_sqlx())
-            .push_bind(person.name)
-            .push_bind(person.gender)
+            .push_bind(person.name.clone())
+            .push_bind(person.gender.clone())
             .push_bind(person.height.map(|height| i32::try_from(height).unwrap()))
             .push_bind(person.mass)
             .push_bind(i32::try_from(person.homeworld).unwrap())
-            .push_bind(person.birth_year);
+            .push_bind(person.birth_year.clone());
     });
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder =
+        QueryBuilder::new("INSERT INTO person_skin_colors (person_id, skin_color)");
+    query_builder.push_values(
+        people.iter().flat_map(|person| {
+            person
+                .skin_colors
+                .clone()
+                .unwrap_or_default()
+                .into_iter()
+                .map(|skin_color| (person.id, skin_color))
+        }),
+        |mut builder, (person_id, skin_color)| {
+            builder
+                .push_bind(i32::try_from(person_id).unwrap())
+                .push_bind(skin_color);
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder =
+        QueryBuilder::new("INSERT INTO person_eye_colors (person_id, eye_color)");
+    query_builder.push_values(
+        people.iter().flat_map(|person| {
+            person
+                .eye_colors
+                .clone()
+                .unwrap_or_default()
+                .into_iter()
+                .map(|eye_color| (person.id, eye_color))
+        }),
+        |mut builder, (person_id, eye_color)| {
+            builder
+                .push_bind(i32::try_from(person_id).unwrap())
+                .push_bind(eye_color);
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder =
+        QueryBuilder::new("INSERT INTO person_hair_colors (person_id, hair_color)");
+    query_builder.push_values(
+        people.iter().flat_map(|person| {
+            person
+                .hair_colors
+                .clone()
+                .unwrap_or_default()
+                .into_iter()
+                .map(|hair_color| (person.id, hair_color))
+        }),
+        |mut builder, (person_id, hair_color)| {
+            builder
+                .push_bind(i32::try_from(person_id).unwrap())
+                .push_bind(hair_color);
+        },
+    );
 
     let query = query_builder.build();
     query.execute(db_pool).await?;
@@ -484,7 +547,7 @@ impl From<PersonNested> for Person {
     }
 }
 
-#[derive(Debug, Deserialize, Type)]
+#[derive(Copy, Clone, Debug, Deserialize, Type)]
 #[serde(rename_all = "snake_case")]
 enum Gender {
     Male,
@@ -505,7 +568,7 @@ impl FromStr for Gender {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Copy, Clone, Debug, Deserialize, Type)]
 // #[serde(rename_all = "kebab-case")]
 enum SkinColor {
     Caucasian,
@@ -566,7 +629,7 @@ impl FromStr for SkinColor {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Copy, Clone, Debug, Deserialize, Type)]
 #[serde(rename_all = "snake_case")]
 enum HairColor {
     #[serde(alias = "blond")]
@@ -596,7 +659,7 @@ impl FromStr for HairColor {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Copy, Clone, Debug, Deserialize, Type)]
 #[serde(rename_all = "kebab-case")]
 enum EyeColor {
     Brown,

@@ -12,20 +12,6 @@ CREATE TABLE planets (
   population FLOAT
 );
 
-CREATE TYPE gender AS ENUM ('Male', 'Female', 'Hermaphrodite');
-
-CREATE TABLE people (
-  id INT PRIMARY KEY NOT NULL,
-  edited TIMESTAMPTZ NOT NULL,
-  created TIMESTAMPTZ NOT NULL,
-  name TEXT NOT NULL,
-  gender gender,
-  height INTEGER,
-  mass FLOAT,
-  homeworld integer REFERENCES planets (id) NOT NULL,
-  birth_year TEXT
-);
-
 CREATE TYPE climate AS ENUM (
   'Arid',
   'Temperate',
@@ -111,4 +97,90 @@ CREATE TABLE planet_terrains (
   id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   planet_id integer REFERENCES planets (id) NOT NULL,
   terrain terrain NOT NULL
+);
+
+CREATE TYPE gender AS ENUM ('Male', 'Female', 'Hermaphrodite');
+
+CREATE TABLE people (
+  id INT PRIMARY KEY NOT NULL,
+  edited TIMESTAMPTZ NOT NULL,
+  created TIMESTAMPTZ NOT NULL,
+  name TEXT NOT NULL,
+  gender gender,
+  height INTEGER,
+  mass FLOAT,
+  homeworld integer REFERENCES planets (id) NOT NULL,
+  birth_year TEXT
+);
+
+CREATE TYPE skincolor AS ENUM (
+  'Caucasian',
+  'Black',
+  'Asian',
+  'Hispanic',
+  'Grey',
+  'Fair',
+  'Gold',
+  'White',
+  'Blue',
+  'Light',
+  'Red',
+  'Green',
+  'GreenTan',
+  'Brown',
+  'Pale',
+  'Metal',
+  'Dark',
+  'BrownMottle',
+  'MottledGreen',
+  'Orange',
+  'Yellow',
+  'Tan',
+  'Silver'
+);
+
+CREATE TABLE person_skin_colors (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  person_id integer REFERENCES people (id) NOT NULL,
+  skin_color skincolor NOT NULL
+);
+
+CREATE TYPE eyecolor AS ENUM (
+  'Brown',
+  'Blue',
+  'Green',
+  'Hazel',
+  'Grey',
+  'Amber',
+  'Yellow',
+  'Golden',
+  'Red',
+  'Black',
+  'BlueGray',
+  'Orange',
+  'Pink',
+  'Gold',
+  'White'
+);
+
+CREATE TABLE person_eye_colors (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  person_id integer REFERENCES people (id) NOT NULL,
+  eye_color eyecolor NOT NULL
+);
+
+CREATE TYPE haircolor AS ENUM (
+  'Blonde',
+  'Brown',
+  'Black',
+  'Red',
+  'Grey',
+  'Auburn',
+  'White'
+);
+
+CREATE TABLE person_hair_colors (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  person_id integer REFERENCES people (id) NOT NULL,
+  hair_color haircolor NOT NULL
 );
