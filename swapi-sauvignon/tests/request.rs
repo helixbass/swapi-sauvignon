@@ -14,7 +14,7 @@ async fn request_test(request: &str, expected: impl FnOnce(&serde_json::Value)) 
 }
 
 #[tokio::test]
-async fn test_object_field() {
+async fn test_all_planets() {
     request_test(
         r#"
             {
@@ -25,6 +25,14 @@ async fn test_object_field() {
         "#,
         |response| {
             assert_eq!(_q("$.data.allPlanets.*", response).len(), 60);
+            assert_eq!(
+                _q("$.data.allPlanets[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Tatooine"
+            );
         },
     )
     .await;
