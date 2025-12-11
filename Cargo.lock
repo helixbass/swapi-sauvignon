@@ -2434,6 +2434,8 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_with",
+ "shared",
+ "sqlx",
  "squalid",
  "tokio",
 ]

@@ -7,12 +7,20 @@ use serde::{
     de::{self, DeserializeOwned, Deserializer},
     Deserialize,
 };
+use shared::get_db_pool;
+use sqlx::{Pool, Postgres};
 use squalid::regex;
 use tokio::fs::read_to_string;
 
-fn json_seed_file_path(file_name_root: &str) -> PathBuf {
+fn workspace_root_directory() -> PathBuf {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    path.push(&format!("../seed/{file_name_root}.json"));
+    path.push("..");
+    path
+}
+
+fn json_seed_file_path(file_name_root: &str) -> PathBuf {
+    let mut path = workspace_root_directory();
+    path.push(&format!("seed/{file_name_root}.json"));
     path
 }
 
@@ -24,7 +32,21 @@ async fn parse_json_file<TTarget: DeserializeOwned>(
     )?)
 }
 
+fn sql_file_path(file_name_root: &str) -> PathBuf {
+    let mut path = workspace_root_directory();
+    path.push(&format!("sql/{file_name_root}.sql"));
+    path
+}
+
+async fn create_tables(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
+    let sql = read_to_string(sql_file_path("create_tables")).await?;
+    sqlx::query(&sql).execute(db_pool).await?;
+    Ok(())
+}
+
 pub async fn seed() -> anyhow::Result<()> {
+    let db_pool = get_db_pool().await?;
+    create_tables(&db_pool).await?;
     let planets: Vec<Planet> = parse_json_file::<Vec<PlanetNested>>("planets")
         .await?
         .into_iter()
