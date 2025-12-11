@@ -64,6 +64,8 @@ struct PlanetNestedFields {
     terrains: Option<Vec<String>>,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     gravity: Option<String>,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    orbital_period: Option<u32>,
 }
 
 #[derive(Debug)]
@@ -78,6 +80,7 @@ struct Planet {
     rotation_period: Option<u32>,
     terrains: Option<Vec<String>>,
     gravity: Option<String>,
+    orbital_period: Option<u32>,
 }
 
 impl From<PlanetNested> for Planet {
@@ -93,6 +96,7 @@ impl From<PlanetNested> for Planet {
             rotation_period: value.fields.rotation_period,
             terrains: value.fields.terrains,
             gravity: value.fields.gravity,
+            orbital_period: value.fields.orbital_period,
         }
     }
 }
