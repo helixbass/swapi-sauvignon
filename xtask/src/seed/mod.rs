@@ -1,7 +1,12 @@
+use std::fmt::Display;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 use jiff::Timestamp;
-use serde::{de::DeserializeOwned, Deserialize};
+use serde::{
+    de::{self, DeserializeOwned, Deserializer},
+    Deserialize,
+};
 use serde_with::{formats::Separator, serde_as, StringWithSeparator};
 use tokio::fs::read_to_string;
 
@@ -40,24 +45,34 @@ struct PlanetNested {
 #[derive(Debug, Deserialize)]
 struct PlanetNestedFields {
     edited: Timestamp,
+    created: Timestamp,
     #[serde(rename = "climate")]
     #[serde_as(as = "StringWithSeparator::<CommaSpaceSeparator, String>")]
     climates: Vec<String>,
+    name: String,
+    #[serde(deserialize_with = "deserialize_surface_water")]
+    surface_water: Option<f64>,
 }
 
 #[derive(Debug)]
 struct Planet {
     edited: Timestamp,
+    created: Timestamp,
     climates: Vec<String>,
     id: u32,
+    name: String,
+    surface_water: Option<f64>,
 }
 
 impl From<PlanetNested> for Planet {
     fn from(value: PlanetNested) -> Self {
         Self {
             edited: value.fields.edited,
+            created: value.fields.created,
             climates: value.fields.climates,
             id: value.id,
+            name: value.fields.name,
+            surface_water: value.fields.surface_water,
         }
     }
 }
@@ -68,4 +83,30 @@ impl Separator for CommaSpaceSeparator {
     fn separator() -> &'static str {
         ", "
     }
+}
+
+// https://github.com/serde-rs/json/issues/317#issuecomment-300251188
+fn deserialize_from_str<'de, TTarget, TDeserializer>(
+    deserializer: TDeserializer,
+) -> Result<TTarget, TDeserializer::Error>
+where
+    TTarget: FromStr,
+    TTarget::Err: Display,
+    TDeserializer: Deserializer<'de>,
+{
+    let str = String::deserialize(deserializer)?;
+    TTarget::from_str(&str).map_err(de::Error::custom)
+}
+
+fn deserialize_surface_water<'de, TDeserializer>(
+    deserializer: TDeserializer,
+) -> Result<Option<f64>, TDeserializer::Error>
+where
+    TDeserializer: Deserializer<'de>,
+{
+    let str = String::deserialize(deserializer)?;
+    Ok(match &*str {
+        "unknown" => None,
+        str => Some(f64::from_str(str).map_err(de::Error::custom)?),
+    })
 }
