@@ -271,6 +271,9 @@ enum Terrain {
     RockyCanyons,
     AcidPools,
     Rocky,
+    Vines,
+    Cities,
+    Cliffs,
 }
 
 impl FromStr for Terrain {
@@ -296,7 +299,7 @@ impl FromStr for Terrain {
             "rock" => Ok(Self::Rock),
             "barren" => Ok(Self::Barren),
             "scrublands" => Ok(Self::Scrublands),
-            "savanna" | "savannas" => Ok(Self::Savanna),
+            "savanna" | "savannas" | "savannahs" => Ok(Self::Savanna),
             "canyons" => Ok(Self::Canyons),
             "sinkholes" => Ok(Self::Sinkholes),
             "volcanoes" => Ok(Self::Volcanoes),
@@ -328,6 +331,9 @@ impl FromStr for Terrain {
             "rocky canyons" => Ok(Self::RockyCanyons),
             "acid pools" => Ok(Self::AcidPools),
             "rocky" => Ok(Self::Rocky),
+            "vines" => Ok(Self::Vines),
+            "cities" => Ok(Self::Cities),
+            "cliffs" => Ok(Self::Cliffs),
             _ => Err("Unknown terrain"),
         }
     }
