@@ -1,5 +1,9 @@
 use clap::{Parser, Subcommand};
 
+mod seed;
+
+use seed::seed;
+
 #[derive(Parser)]
 struct Args {
     #[command(subcommand)]
@@ -12,12 +16,13 @@ enum Command {
     Seed,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = Args::parse();
 
     match args.command {
         Command::Seed => {
-            unimplemented!()
+            seed().await;
         }
     }
 }
