@@ -7,7 +7,7 @@ use serde::{
     de::{self, DeserializeOwned, Deserializer},
     Deserialize,
 };
-use serde_with::{formats::Separator, serde_as, StringWithSeparator};
+use squalid::regex;
 use tokio::fs::read_to_string;
 
 fn json_seed_file_path(file_name_root: &str) -> PathBuf {
@@ -41,14 +41,15 @@ struct PlanetNested {
     id: u32,
 }
 
-#[serde_as]
 #[derive(Debug, Deserialize)]
 struct PlanetNestedFields {
     edited: Timestamp,
     created: Timestamp,
-    #[serde(rename = "climate")]
-    #[serde_as(as = "StringWithSeparator::<CommaSpaceSeparator, String>")]
-    climates: Vec<String>,
+    #[serde(
+        rename = "climate",
+        deserialize_with = "deserialize_comma_separated_or_unknown"
+    )]
+    climates: Option<Vec<String>>,
     name: String,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     surface_water: Option<f64>,
@@ -56,18 +57,24 @@ struct PlanetNestedFields {
     diameter: Option<u32>,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     rotation_period: Option<u32>,
+    #[serde(
+        rename = "terrain",
+        deserialize_with = "deserialize_comma_separated_or_unknown"
+    )]
+    terrains: Option<Vec<String>>,
 }
 
 #[derive(Debug)]
 struct Planet {
     edited: Timestamp,
     created: Timestamp,
-    climates: Vec<String>,
+    climates: Option<Vec<String>>,
     id: u32,
     name: String,
     surface_water: Option<f64>,
     diameter: Option<u32>,
     rotation_period: Option<u32>,
+    terrains: Option<Vec<String>>,
 }
 
 impl From<PlanetNested> for Planet {
@@ -81,15 +88,8 @@ impl From<PlanetNested> for Planet {
             surface_water: value.fields.surface_water,
             diameter: value.fields.diameter,
             rotation_period: value.fields.rotation_period,
+            terrains: value.fields.terrains,
         }
-    }
-}
-
-struct CommaSpaceSeparator;
-
-impl Separator for CommaSpaceSeparator {
-    fn separator() -> &'static str {
-        ", "
     }
 }
 
@@ -118,5 +118,26 @@ where
     Ok(match &*str {
         "unknown" => None,
         str => Some(TTarget::from_str(str).map_err(de::Error::custom)?),
+    })
+}
+
+fn deserialize_comma_separated_or_unknown<'de, TDeserializer>(
+    deserializer: TDeserializer,
+) -> Result<Option<Vec<String>>, TDeserializer::Error>
+where
+    TDeserializer: Deserializer<'de>,
+{
+    let str = String::deserialize(deserializer)?;
+    Ok(match &*str {
+        "unknown" => None,
+        str => Some(
+            str.split(", ")
+                .map(|chunk| match regex!(r#"^[^,]+$"#).is_match(chunk) {
+                    true => Ok(chunk.to_owned()),
+                    false => Err("Unexpected format"),
+                })
+                .collect::<Result<Vec<_>, _>>()
+                .map_err(de::Error::custom)?,
+        ),
     })
 }
