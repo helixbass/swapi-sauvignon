@@ -52,6 +52,8 @@ struct PlanetNestedFields {
     name: String,
     #[serde(deserialize_with = "deserialize_surface_water")]
     surface_water: Option<f64>,
+    #[serde(deserialize_with = "deserialize_diameter")]
+    diameter: Option<u32>,
 }
 
 #[derive(Debug)]
@@ -62,6 +64,7 @@ struct Planet {
     id: u32,
     name: String,
     surface_water: Option<f64>,
+    diameter: Option<u32>,
 }
 
 impl From<PlanetNested> for Planet {
@@ -73,6 +76,7 @@ impl From<PlanetNested> for Planet {
             id: value.id,
             name: value.fields.name,
             surface_water: value.fields.surface_water,
+            diameter: value.fields.diameter,
         }
     }
 }
@@ -108,5 +112,18 @@ where
     Ok(match &*str {
         "unknown" => None,
         str => Some(f64::from_str(str).map_err(de::Error::custom)?),
+    })
+}
+
+fn deserialize_diameter<'de, TDeserializer>(
+    deserializer: TDeserializer,
+) -> Result<Option<u32>, TDeserializer::Error>
+where
+    TDeserializer: Deserializer<'de>,
+{
+    let str = String::deserialize(deserializer)?;
+    Ok(match &*str {
+        "unknown" => None,
+        str => Some(u32::from_str(str).map_err(de::Error::custom)?),
     })
 }
