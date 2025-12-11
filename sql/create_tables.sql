@@ -25,3 +25,28 @@ CREATE TABLE people (
   homeworld integer REFERENCES planets (id) NOT NULL,
   birth_year TEXT
 );
+
+CREATE TYPE climate AS ENUM (
+  'Arid',
+  'Temperate',
+  'Tropical',
+  'Frozen',
+  'Murky',
+  'Windy',
+  'Hot',
+  'ArtificialTemperate',
+  'Frigid',
+  'Humid',
+  'Moist',
+  'Polluted',
+  'Superheated',
+  'Subarctic',
+  'Arctic',
+  'Rocky'
+);
+
+CREATE TABLE planet_climates (
+  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  planet_id integer REFERENCES planets (id) NOT NULL,
+  climate climate NOT NULL
+);

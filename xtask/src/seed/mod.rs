@@ -66,12 +66,12 @@ async fn seed_planets(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
     println!("planets: {planets:#?}");
 
     let mut query_builder = QueryBuilder::new("INSERT INTO planets (id, edited, created, name, surface_water, diameter, rotation_period, gravity, orbital_period, population)");
-    query_builder.push_values(planets, |mut builder, planet| {
+    query_builder.push_values(&planets, |mut builder, planet| {
         builder
             .push_bind(i32::try_from(planet.id).unwrap())
             .push_bind(planet.edited.to_sqlx())
             .push_bind(planet.created.to_sqlx())
-            .push_bind(planet.name)
+            .push_bind(planet.name.clone())
             .push_bind(planet.surface_water)
             .push_bind(
                 planet
@@ -83,7 +83,7 @@ async fn seed_planets(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
                     .rotation_period
                     .map(|rotation_period| i32::try_from(rotation_period).unwrap()),
             )
-            .push_bind(planet.gravity)
+            .push_bind(planet.gravity.clone())
             .push_bind(
                 planet
                     .orbital_period
@@ -91,6 +91,26 @@ async fn seed_planets(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
             )
             .push_bind(planet.population);
     });
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO planet_climates (planet_id, climate)");
+    query_builder.push_values(
+        planets.iter().flat_map(|planet| {
+            planet
+                .climates
+                .clone()
+                .unwrap_or_default()
+                .into_iter()
+                .map(|climate| (planet.id, climate))
+        }),
+        |mut builder, (planet_id, climate)| {
+            builder
+                .push_bind(i32::try_from(planet_id).unwrap())
+                .push_bind(climate);
+        },
+    );
 
     let query = query_builder.build();
     query.execute(db_pool).await?;
@@ -173,7 +193,7 @@ impl From<PlanetNested> for Planet {
     }
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug, Type)]
 enum Climate {
     Arid,
     Temperate,
