@@ -12,7 +12,7 @@ use serde::{
 };
 use shared::get_db_pool;
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
-use squalid::{_d, regex};
+use squalid::{_d, fancy_regex, regex};
 use tokio::fs::read_to_string;
 
 fn workspace_root_directory() -> PathBuf {
@@ -1013,7 +1013,7 @@ struct TransportNestedFields {
     cost_in_credits: Option<f64>,
     #[serde(
         rename = "manufacturer",
-        deserialize_with = "deserialize_comma_separated_or_unknown"
+        deserialize_with = "deserialize_comma_separated_not_inc_or_unknown"
     )]
     manufacturers: Option<Vec<Manufacturer>>,
 }
@@ -1309,6 +1309,31 @@ where
         "unknown" | "n/a" | "none" | "indefinite" => None,
         str => Some(
             str.split(", ")
+                .map(|chunk| match regex!(r#"^[^,]+$"#).is_match(chunk) {
+                    true => TTarget::from_str(chunk).map_err(|_| ".from_str() failed"),
+                    false => Err("Unexpected format"),
+                })
+                .collect::<Result<Vec<_>, _>>()
+                .map_err(de::Error::custom)?,
+        ),
+    })
+}
+
+fn deserialize_comma_separated_not_inc_or_unknown<'de, TTarget, TDeserializer>(
+    deserializer: TDeserializer,
+) -> Result<Option<Vec<TTarget>>, TDeserializer::Error>
+where
+    TTarget: FromStr,
+    TTarget::Err: Display,
+    TDeserializer: Deserializer<'de>,
+{
+    let str = String::deserialize(deserializer)?;
+    Ok(match &*str {
+        "unknown" | "n/a" | "none" | "indefinite" => None,
+        str => Some(
+            fancy_regex!(r#", (?!Inc\b|Incorporated)"#)
+                .split(str)
+                .map(Result::unwrap)
                 .map(|chunk| match regex!(r#"^[^,]+$"#).is_match(chunk) {
                     true => TTarget::from_str(chunk).map_err(|_| ".from_str() failed"),
                     false => Err("Unexpected format"),
