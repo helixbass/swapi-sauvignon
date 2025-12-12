@@ -1078,7 +1078,37 @@ async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .map(Into::into)
         .collect();
     println!("vehicles: {vehicles:#?}");
-    unimplemented!();
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO vehicles (id, vehicle_class)");
+    query_builder.push_values(&vehicles, |mut builder, vehicle| {
+        builder
+            .push_bind(i32::try_from(vehicle.id).unwrap())
+            .push_bind(vehicle.vehicle_class);
+    });
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO vehicle_pilots (vehicle_id, person_id)");
+    query_builder.push_values(
+        vehicles.iter().flat_map(|vehicle| {
+            vehicle
+                .pilots
+                .clone()
+                .into_iter()
+                .map(|pilot_id| (vehicle.id, pilot_id))
+        }),
+        |mut builder, (vehicle_id, pilot_id)| {
+            builder
+                .push_bind(i32::try_from(vehicle_id).unwrap())
+                .push_bind(i32::try_from(pilot_id).unwrap());
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    Ok(())
 }
 
 #[derive(Debug, Deserialize)]
