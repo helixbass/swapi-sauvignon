@@ -1603,6 +1603,16 @@ impl From<FilmNested> for Film {
 enum ProducerOrDirector {
     #[serde(alias = "Gary Kurtz")]
     GaryKurtz,
+    #[serde(alias = "Rick McCallum")]
+    RickMcCallum,
+    #[serde(alias = "George Lucas")]
+    GeorgeLucas,
+    #[serde(alias = "Irvin Kershner")]
+    IrvinKershner,
+    #[serde(alias = "Howard G. Kazanjian")]
+    HowardGKazanjian,
+    #[serde(alias = "Richard Marquand")]
+    RichardMarquand,
 }
 
 impl FromStr for ProducerOrDirector {
@@ -1611,6 +1621,11 @@ impl FromStr for ProducerOrDirector {
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         match value {
             "Gary Kurtz" => Ok(Self::GaryKurtz),
+            "Rick McCallum" => Ok(Self::RickMcCallum),
+            "George Lucas" => Ok(Self::GeorgeLucas),
+            "Irvin Kershner" => Ok(Self::IrvinKershner),
+            "Howard G. Kazanjian" => Ok(Self::HowardGKazanjian),
+            "Richard Marquand" => Ok(Self::RichardMarquand),
             _ => Err("Unknown producer or director"),
         }
     }
