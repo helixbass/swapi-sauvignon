@@ -957,7 +957,7 @@ impl FromStr for EyeColor {
 }
 
 async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
-    let transports: Vec<Transport> = parse_json_file::<Vec<TransportNested>>("transport")
+    let mut transports: Vec<Transport> = parse_json_file::<Vec<TransportNested>>("transport")
         .await?
         .into_iter()
         .map(Into::into)
@@ -1039,15 +1039,32 @@ async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .collect();
     println!("starships: {starships:#?}");
 
-    let mut query_builder =
-        QueryBuilder::new("INSERT INTO starships (id, mglt, starship_class, hyperdrive_rating)");
-    query_builder.push_values(&starships, |mut builder, starship| {
-        builder
-            .push_bind(i32::try_from(starship.id).unwrap())
-            .push_bind(starship.mglt.map(|mglt| i32::try_from(mglt).unwrap()))
-            .push_bind(starship.starship_class)
-            .push_bind(starship.hyperdrive_rating);
-    });
+    let mut query_builder = QueryBuilder::new(
+        "INSERT INTO starships (id, mglt, starship_class, hyperdrive_rating, transport_id)",
+    );
+    query_builder.push_values(
+        starships.iter().map(|starship| {
+            (
+                starship,
+                transports
+                    .remove(
+                        transports
+                            .iter()
+                            .position(|transport| transport.id == starship.id)
+                            .unwrap(),
+                    )
+                    .id,
+            )
+        }),
+        |mut builder, (starship, transport_id)| {
+            builder
+                .push_bind(i32::try_from(starship.id).unwrap())
+                .push_bind(starship.mglt.map(|mglt| i32::try_from(mglt).unwrap()))
+                .push_bind(starship.starship_class)
+                .push_bind(starship.hyperdrive_rating)
+                .push_bind(i32::try_from(transport_id).unwrap());
+        },
+    );
 
     let query = query_builder.build();
     query.execute(db_pool).await?;
@@ -1079,12 +1096,30 @@ async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .collect();
     println!("vehicles: {vehicles:#?}");
 
-    let mut query_builder = QueryBuilder::new("INSERT INTO vehicles (id, vehicle_class)");
-    query_builder.push_values(&vehicles, |mut builder, vehicle| {
-        builder
-            .push_bind(i32::try_from(vehicle.id).unwrap())
-            .push_bind(vehicle.vehicle_class);
-    });
+    let mut query_builder =
+        QueryBuilder::new("INSERT INTO vehicles (id, vehicle_class, transport_id)");
+    query_builder.push_values(
+        vehicles.iter().map(|vehicle| {
+            (
+                vehicle,
+                transports
+                    .remove(
+                        transports
+                            .iter()
+                            .position(|transport| transport.id == vehicle.id)
+                            .unwrap(),
+                    )
+                    .id,
+            )
+        }),
+        |mut builder, (vehicle, transport_id)| {
+            builder
+                .push_bind(i32::try_from(vehicle.id).unwrap())
+                .push_bind(vehicle.vehicle_class)
+                .push_bind(i32::try_from(transport_id).unwrap());
+        },
+    );
+    assert!(transports.is_empty());
 
     let query = query_builder.build();
     query.execute(db_pool).await?;

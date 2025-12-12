@@ -339,7 +339,8 @@ CREATE TABLE starships (
   id INTEGER PRIMARY KEY NOT NULL,
   mglt INTEGER,
   starship_class starshipclass NOT NULL,
-  hyperdrive_rating FLOAT
+  hyperdrive_rating FLOAT,
+  transport_id integer REFERENCES transports (id) NOT NULL
 );
 
 CREATE TABLE starship_pilots (
@@ -371,7 +372,8 @@ CREATE TYPE vehicleclass AS ENUM(
 
 CREATE TABLE vehicles (
   id INTEGER PRIMARY KEY NOT NULL,
-  vehicle_class vehicleclass NOT NULL
+  vehicle_class vehicleclass NOT NULL,
+  transport_id integer REFERENCES transports (id) NOT NULL
 );
 
 CREATE TABLE vehicle_pilots (
