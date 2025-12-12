@@ -1726,6 +1726,7 @@ dependencies = [
  "itertools 0.14.0",
  "rkyv",
  "sauvignon_proc_macros",
+ "sauvignon_shared",
  "serde",
  "serde_json",
  "sql_query_builder",
@@ -1744,9 +1745,14 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
+ "sauvignon_shared",
  "squalid 0.0.1-dev.0 (git+https://github.com/helixbass/squalid?rev=1a43e5d)",
  "syn 2.0.111",
 ]
+
+[[package]]
+name = "sauvignon_shared"
+version = "0.1.0"
 
 [[package]]
 name = "schannel"

@@ -17,10 +17,32 @@ pub fn get_schema() -> Schema {
                     name => string_column()
                 ]
             }
+            Species => {
+                fields => [
+                    name => string_column()
+                    // TODO: should be able to be just
+                    // has_many() (with no args)?
+                    people => has_many(
+                        type => Person
+                        foreign_key => species_id
+                    )
+                ]
+            }
+            Person => {
+                fields => [
+                    name => string_column()
+                ]
+            }
         ]
         query => [
             allPlanets => {
                 type => [Planet!]!
+                internal_dependencies => [
+                    ids => id_column_list()
+                ]
+            }
+            allSpecies => {
+                type => [Species!]!
                 internal_dependencies => [
                     ids => id_column_list()
                 ]

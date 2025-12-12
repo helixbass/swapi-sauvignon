@@ -41,6 +41,43 @@ async fn test_all_planets() {
     .await;
 }
 
+#[tokio::test]
+async fn test_all_species() {
+    request_test(
+        r#"
+            {
+              allSpecies {
+                name
+                people {
+                  name
+                }
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(_q("$.data.allSpecies.*", response).len(), 37);
+            assert_eq!(
+                _q("$.data.allSpecies[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Human"
+            );
+            assert_eq!(_q("$.data.allSpecies[0].people.*", response).len(), 35);
+            assert_eq!(
+                _q("$.data.allSpecies[0].people[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Luke Skywalker"
+            );
+        },
+    )
+    .await;
+}
+
 fn _q<'a>(query: &str, response: &'a serde_json::Value) -> NodeList<'a> {
     let path = JsonPath::parse(query).unwrap();
     path.query(response)
