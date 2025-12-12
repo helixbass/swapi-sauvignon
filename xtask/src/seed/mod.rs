@@ -1544,7 +1544,103 @@ async fn seed_films(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
     let query = query_builder.build();
     query.execute(db_pool).await?;
 
-    unimplemented!()
+    let mut query_builder = QueryBuilder::new("INSERT INTO film_starships (film_id, starship_id)");
+    query_builder.push_values(
+        films.iter().flat_map(|film| {
+            film.starships
+                .iter()
+                .map(|starship_id| (film.id, *starship_id))
+        }),
+        |mut builder, (film_id, starship_id)| {
+            builder
+                .push_bind(i32::try_from(film_id).unwrap())
+                .push_bind(i32::try_from(starship_id).unwrap());
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO film_vehicles (film_id, vehicle_id)");
+    query_builder.push_values(
+        films.iter().flat_map(|film| {
+            film.vehicles
+                .iter()
+                .map(|vehicle_id| (film.id, *vehicle_id))
+        }),
+        |mut builder, (film_id, vehicle_id)| {
+            builder
+                .push_bind(i32::try_from(film_id).unwrap())
+                .push_bind(i32::try_from(vehicle_id).unwrap());
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO film_planets (film_id, planet_id)");
+    query_builder.push_values(
+        films
+            .iter()
+            .flat_map(|film| film.planets.iter().map(|planet_id| (film.id, *planet_id))),
+        |mut builder, (film_id, planet_id)| {
+            builder
+                .push_bind(i32::try_from(film_id).unwrap())
+                .push_bind(i32::try_from(planet_id).unwrap());
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO film_producers (film_id, producer)");
+    query_builder.push_values(
+        films
+            .iter()
+            .flat_map(|film| film.producers.iter().map(|producer| (film.id, *producer))),
+        |mut builder, (film_id, producer)| {
+            builder
+                .push_bind(i32::try_from(film_id).unwrap())
+                .push_bind(producer);
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO film_characters (film_id, person_id)");
+    query_builder.push_values(
+        films.iter().flat_map(|film| {
+            film.characters
+                .iter()
+                .map(|person_id| (film.id, *person_id))
+        }),
+        |mut builder, (film_id, person_id)| {
+            builder
+                .push_bind(i32::try_from(film_id).unwrap())
+                .push_bind(i32::try_from(person_id).unwrap());
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder = QueryBuilder::new("INSERT INTO film_species (film_id, species_id)");
+    query_builder.push_values(
+        films
+            .iter()
+            .flat_map(|film| film.species.iter().map(|species_id| (film.id, *species_id))),
+        |mut builder, (film_id, species_id)| {
+            builder
+                .push_bind(i32::try_from(film_id).unwrap())
+                .push_bind(i32::try_from(species_id).unwrap());
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    Ok(())
 }
 
 #[derive(Debug, Deserialize)]
