@@ -1528,6 +1528,53 @@ async fn seed_films(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .collect();
     println!("films: {films:#?}");
 
+    let mut query_builder = QueryBuilder::new("INSERT INTO transports (id, edited, created, consumables, name, cargo_capacity, passengers, max_atmosphering_speed, crew_start, crew_end, length, model, cost_in_credits)");
+    query_builder.push_values(&transports, |mut builder, transport| {
+        builder
+            .push_bind(i32::try_from(transport.id).unwrap())
+            .push_bind(transport.edited.to_sqlx())
+            .push_bind(transport.created.to_sqlx())
+            .push_bind(transport.consumables.clone())
+            .push_bind(transport.name.clone())
+            .push_bind(transport.cargo_capacity)
+            .push_bind(
+                transport
+                    .passengers
+                    .map(|passengers| i32::try_from(passengers).unwrap()),
+            )
+            .push_bind(
+                transport
+                    .max_atmosphering_speed
+                    .map(|max_atmosphering_speed| i32::try_from(max_atmosphering_speed).unwrap()),
+            )
+            .push_bind(
+                transport
+                    .crew
+                    .as_ref()
+                    .map(|crew| match crew {
+                        SingleOrRange::Single(single) => *single,
+                        SingleOrRange::Range(range) => *range.start(),
+                    })
+                    .map(|crew| i32::try_from(crew).unwrap()),
+            )
+            .push_bind(
+                transport
+                    .crew
+                    .as_ref()
+                    .and_then(|crew| match crew {
+                        SingleOrRange::Single(_) => None,
+                        SingleOrRange::Range(range) => Some(*range.end()),
+                    })
+                    .map(|crew| i32::try_from(crew).unwrap()),
+            )
+            .push_bind(transport.length)
+            .push_bind(transport.model.clone())
+            .push_bind(transport.cost_in_credits);
+    });
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
     unimplemented!()
 }
 

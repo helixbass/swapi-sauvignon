@@ -382,3 +382,58 @@ CREATE TABLE vehicle_pilots (
   vehicle_id integer REFERENCES vehicles (id) NOT NULL,
   person_id integer REFERENCES people (id) NOT NULL
 );
+
+CREATE TYPE producerordirector AS ENUM(
+  'GaryKurtz',
+  'RickMcCallum',
+  'GeorgeLucas',
+  'IrvinKershner',
+  'HowardGKazanjian',
+  'RichardMarquand'
+);
+
+CREATE TABLE films (
+  id INTEGER PRIMARY KEY NOT NULL,
+  edited TIMESTAMPTZ NOT NULL,
+  created TIMESTAMPTZ NOT NULL,
+  title TEXT NOT NULL,
+  episode_id INTEGER NOT NULL,
+  release_date DATE NOT NULL,
+  opening_crawl TEXT NOT NULL
+);
+
+CREATE TABLE film_starships (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  film_id integer REFERENCES films (id) NOT NULL,
+  starship_id integer REFERENCES starships (id) NOT NULL
+);
+
+CREATE TABLE film_vehicles (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  film_id integer REFERENCES films (id) NOT NULL,
+  vehicle_id integer REFERENCES vehicles (id) NOT NULL
+);
+
+CREATE TABLE film_planets (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  film_id integer REFERENCES films (id) NOT NULL,
+  planet_id integer REFERENCES planets (id) NOT NULL
+);
+
+CREATE TABLE film_producers (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  film_id integer REFERENCES films (id) NOT NULL,
+  producer producerordirector NOT NULL
+);
+
+CREATE TABLE film_characters (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  film_id integer REFERENCES films (id) NOT NULL,
+  person_id integer REFERENCES people (id) NOT NULL
+);
+
+CREATE TABLE film_species (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  film_id integer REFERENCES films (id) NOT NULL,
+  species_id integer REFERENCES species (id) NOT NULL
+);
