@@ -4,6 +4,7 @@ use std::ops::RangeInclusive;
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use chrono::NaiveDate;
 use jiff::Timestamp;
 use jiff_sqlx::ToSqlx;
 use serde::{
@@ -58,7 +59,9 @@ pub async fn seed() -> anyhow::Result<()> {
     let people_species = seed_species(&db_pool).await?;
     seed_people(&db_pool, &people_species).await?;
     seed_transports(&db_pool).await?;
-    unimplemented!()
+    seed_films(&db_pool).await?;
+
+    Ok(())
 }
 
 async fn seed_planets(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
@@ -625,7 +628,7 @@ async fn seed_people(
         .collect();
     println!("people: {people:#?}");
 
-    let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year)");
+    let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year, species_id)");
     query_builder.push_values(&people, |mut builder, person| {
         builder
             .push_bind(i32::try_from(person.id).unwrap())
@@ -636,7 +639,12 @@ async fn seed_people(
             .push_bind(person.height.map(|height| i32::try_from(height).unwrap()))
             .push_bind(person.mass)
             .push_bind(i32::try_from(person.homeworld).unwrap())
-            .push_bind(person.birth_year.clone());
+            .push_bind(person.birth_year.clone())
+            .push_bind(
+                people_species
+                    .get(&person.id)
+                    .map(|species_id| i32::try_from(*species_id).unwrap()),
+            );
     });
 
     let query = query_builder.build();
@@ -1512,6 +1520,102 @@ enum VehicleClass {
     DroidTank,
 }
 
+async fn seed_films(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
+    let films: Vec<Film> = parse_json_file::<Vec<FilmNested>>("films")
+        .await?
+        .into_iter()
+        .map(Into::into)
+        .collect();
+    println!("films: {films:#?}");
+
+    unimplemented!()
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FilmNested {
+    fields: FilmNestedFields,
+    #[serde(rename = "pk")]
+    id: u32,
+    #[serde(rename = "model")]
+    _model: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FilmNestedFields {
+    starships: Vec<u32>,
+    edited: Timestamp,
+    created: Timestamp,
+    vehicles: Vec<u32>,
+    planets: Vec<u32>,
+    #[serde(rename = "producer", deserialize_with = "deserialize_comma_separated")]
+    producers: Vec<ProducerOrDirector>,
+    title: String,
+    episode_id: u32,
+    director: ProducerOrDirector,
+    release_date: NaiveDate,
+    opening_crawl: String,
+    characters: Vec<u32>,
+    species: Vec<u32>,
+}
+
+#[derive(Debug)]
+struct Film {
+    id: u32,
+    starships: Vec<u32>,
+    edited: Timestamp,
+    created: Timestamp,
+    vehicles: Vec<u32>,
+    planets: Vec<u32>,
+    producers: Vec<ProducerOrDirector>,
+    title: String,
+    episode_id: u32,
+    director: ProducerOrDirector,
+    release_date: NaiveDate,
+    opening_crawl: String,
+    characters: Vec<u32>,
+    species: Vec<u32>,
+}
+
+impl From<FilmNested> for Film {
+    fn from(value: FilmNested) -> Self {
+        Self {
+            id: value.id,
+            starships: value.fields.starships,
+            edited: value.fields.edited,
+            created: value.fields.created,
+            vehicles: value.fields.vehicles,
+            planets: value.fields.planets,
+            producers: value.fields.producers,
+            title: value.fields.title,
+            episode_id: value.fields.episode_id,
+            director: value.fields.director,
+            release_date: value.fields.release_date,
+            opening_crawl: value.fields.opening_crawl,
+            characters: value.fields.characters,
+            species: value.fields.species,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Type)]
+enum ProducerOrDirector {
+    #[serde(alias = "Gary Kurtz")]
+    GaryKurtz,
+}
+
+impl FromStr for ProducerOrDirector {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "Gary Kurtz" => Ok(Self::GaryKurtz),
+            _ => Err("Unknown producer or director"),
+        }
+    }
+}
+
 // https://github.com/serde-rs/json/issues/317#issuecomment-300251188
 fn deserialize_from_str<'de, TTarget, TDeserializer>(
     deserializer: TDeserializer,
@@ -1538,6 +1642,25 @@ where
         "unknown" | "n/a" | "none" | "indefinite" => None,
         str => Some(TTarget::from_str(str).map_err(de::Error::custom)?),
     })
+}
+
+fn deserialize_comma_separated<'de, TTarget, TDeserializer>(
+    deserializer: TDeserializer,
+) -> Result<Vec<TTarget>, TDeserializer::Error>
+where
+    TTarget: FromStr,
+    TTarget::Err: Display,
+    TDeserializer: Deserializer<'de>,
+{
+    let str = String::deserialize(deserializer)?;
+    Ok(str
+        .split(", ")
+        .map(|chunk| match regex!(r#"^[^,]+$"#).is_match(chunk) {
+            true => TTarget::from_str(chunk).map_err(|_| ".from_str() failed"),
+            false => Err("Unexpected format"),
+        })
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(de::Error::custom)?)
 }
 
 fn deserialize_comma_separated_or_unknown<'de, TTarget, TDeserializer>(

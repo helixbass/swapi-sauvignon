@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 anyhow = { workspace = true }
+chrono = { workspace = true, features = ["serde"] }
 clap = { version = "4.5.53", features = ["derive"] }
 fancy-regex = "0.16.2"
 jiff = { workspace = true, features = ["serde"] }

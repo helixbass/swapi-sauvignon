@@ -218,7 +218,8 @@ CREATE TABLE people (
   height INTEGER,
   mass FLOAT,
   homeworld integer REFERENCES planets (id) NOT NULL,
-  birth_year TEXT
+  birth_year TEXT,
+  species_id integer REFERENCES species (id)
 );
 
 CREATE TABLE person_skin_colors (
