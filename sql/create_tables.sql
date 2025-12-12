@@ -398,6 +398,7 @@ CREATE TABLE films (
   created TIMESTAMPTZ NOT NULL,
   title TEXT NOT NULL,
   episode_id INTEGER NOT NULL,
+  director producerordirector NOT NULL,
   release_date DATE NOT NULL,
   opening_crawl TEXT NOT NULL
 );
