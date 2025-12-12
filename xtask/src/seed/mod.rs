@@ -984,14 +984,14 @@ struct TransportNestedFields {
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
     consumables: Option<String>,
     name: String,
-    #[serde(deserialize_with = "deserialize_from_str")]
-    cargo_capacity: f64,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    cargo_capacity: Option<f64>,
     #[serde(deserialize_with = "deserialize_from_str_strip_commas_or_unknown")]
     passengers: Option<u32>,
-    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    #[serde(deserialize_with = "deserialize_from_str_strip_km_or_unknown")]
     max_atmosphering_speed: Option<u32>,
-    #[serde(deserialize_with = "deserialize_single_or_range")]
-    crew: SingleOrRange,
+    #[serde(deserialize_with = "deserialize_single_or_range_or_unknown")]
+    crew: Option<SingleOrRange>,
     #[serde(deserialize_with = "deserialize_from_str_strip_commas_or_unknown")]
     length: Option<f64>,
     model: String,
@@ -1011,10 +1011,10 @@ struct Transport {
     created: Timestamp,
     consumables: Option<String>,
     name: String,
-    cargo_capacity: f64,
+    cargo_capacity: Option<f64>,
     passengers: Option<u32>,
     max_atmosphering_speed: Option<u32>,
-    crew: SingleOrRange,
+    crew: Option<SingleOrRange>,
     length: Option<f64>,
     model: String,
     cost_in_credits: Option<f64>,
@@ -1131,4 +1131,42 @@ where
             SingleOrRange::Single(single)
         },
     )
+}
+
+fn deserialize_single_or_range_or_unknown<'de, TDeserializer>(
+    deserializer: TDeserializer,
+) -> Result<Option<SingleOrRange>, TDeserializer::Error>
+where
+    TDeserializer: Deserializer<'de>,
+{
+    let str = String::deserialize(deserializer)?.replace(",", "");
+    Ok(match &*str {
+        "unknown" | "n/a" | "none" => None,
+        str => Some(
+            if let Some(captures) = regex!(r#"^(\d+)-(\d+)$"#).captures(&str) {
+                SingleOrRange::Range(RangeInclusive::new(
+                    captures[1].parse::<u32>().unwrap(),
+                    captures[2].parse::<u32>().unwrap(),
+                ))
+            } else {
+                let single = str.parse::<u32>().map_err(de::Error::custom)?;
+                SingleOrRange::Single(single)
+            },
+        ),
+    })
+}
+
+fn deserialize_from_str_strip_km_or_unknown<'de, TTarget, TDeserializer>(
+    deserializer: TDeserializer,
+) -> Result<Option<TTarget>, TDeserializer::Error>
+where
+    TTarget: FromStr,
+    TTarget::Err: Display,
+    TDeserializer: Deserializer<'de>,
+{
+    let str = String::deserialize(deserializer)?;
+    Ok(match &*str {
+        "unknown" | "n/a" | "none" => None,
+        str => Some(TTarget::from_str(&str.replace("km", "")).map_err(de::Error::custom)?),
+    })
 }
