@@ -1015,7 +1015,7 @@ struct TransportNestedFields {
         rename = "manufacturer",
         deserialize_with = "deserialize_comma_separated_or_unknown"
     )]
-    manufacturers: Option<Vec<String>>,
+    manufacturers: Option<Vec<Manufacturer>>,
 }
 
 #[derive(Debug)]
@@ -1032,7 +1032,7 @@ struct Transport {
     length: Option<f64>,
     model: String,
     cost_in_credits: Option<f64>,
-    manufacturers: Option<Vec<String>>,
+    manufacturers: Option<Vec<Manufacturer>>,
 }
 
 impl From<TransportNested> for Transport {
@@ -1051,6 +1051,44 @@ impl From<TransportNested> for Transport {
             model: value.fields.model,
             cost_in_credits: value.fields.cost_in_credits,
             manufacturers: value.fields.manufacturers,
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, Deserialize, Type)]
+enum Manufacturer {
+    CorellianEngineeringCorporation,
+    KuatDriveYards,
+    CorelliaMiningCorporation,
+    SienarFleetSystems,
+    CyngusSpaceworks,
+    IncomCorporation,
+    SoroSuubCorporation,
+    ImperialDepartmentOfMilitaryResearch,
+    KoensayrManufacturing,
+    FondorShipyards,
+    GallofreeYardsInc,
+}
+
+impl FromStr for Manufacturer {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "Corellian Engineering Corporation" => Ok(Self::CorellianEngineeringCorporation),
+            "Kuat Drive Yards" => Ok(Self::KuatDriveYards),
+            "Corellia Mining Corporation" => Ok(Self::CorelliaMiningCorporation),
+            "Sienar Fleet Systems" => Ok(Self::SienarFleetSystems),
+            "Cyngus Spaceworks" => Ok(Self::CyngusSpaceworks),
+            "Incom Corporation" | "Incom corporation" => Ok(Self::IncomCorporation),
+            "SoroSuub Corporation" => Ok(Self::SoroSuubCorporation),
+            "Imperial Department of Military Research" => {
+                Ok(Self::ImperialDepartmentOfMilitaryResearch)
+            }
+            "Koensayr Manufacturing" => Ok(Self::KoensayrManufacturing),
+            "Fondor Shipyards" => Ok(Self::FondorShipyards),
+            "Gallofree Yards, Inc." => Ok(Self::GallofreeYardsInc),
+            _ => Err("Unknown manufacturer"),
         }
     }
 }

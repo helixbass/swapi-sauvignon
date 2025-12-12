@@ -238,3 +238,19 @@ CREATE TABLE person_hair_colors (
   person_id integer REFERENCES people (id) NOT NULL,
   hair_color haircolor NOT NULL
 );
+
+CREATE TABLE transports (
+  id INT PRIMARY KEY NOT NULL,
+  edited TIMESTAMPTZ NOT NULL,
+  created TIMESTAMPTZ NOT NULL,
+  consumable TEXT,
+  name TEXT NOT NULL,
+  cargo_capacity FLOAT,
+  passengers INTEGER,
+  max_atmosphering_speed INTEGER,
+  crew_start INTEGER not null,
+  crew_end INTEGER,
+  length FLOAT,
+  model TEXT NOT NULL,
+  cost_in_credits FLOAT
+);
