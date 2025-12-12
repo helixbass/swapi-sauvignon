@@ -963,6 +963,13 @@ async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .map(Into::into)
         .collect();
     println!("transports: {transports:#?}");
+
+    let starships: Vec<Starship> = parse_json_file::<Vec<StarshipNested>>("starships")
+        .await?
+        .into_iter()
+        .map(Into::into)
+        .collect();
+    println!("starships: {starships:#?}");
     unimplemented!();
 }
 
@@ -1039,6 +1046,100 @@ impl From<TransportNested> for Transport {
             manufacturers: value.fields.manufacturers,
         }
     }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StarshipNested {
+    fields: StarshipNestedFields,
+    #[serde(rename = "pk")]
+    id: u32,
+    #[serde(rename = "model")]
+    _model: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct StarshipNestedFields {
+    pilots: Vec<u32>,
+    #[serde(alias = "MGLT", deserialize_with = "deserialize_from_str_or_unknown")]
+    mglt: Option<u32>,
+    starship_class: StarshipClass,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    hyperdrive_rating: Option<f64>,
+}
+
+#[derive(Debug)]
+struct Starship {
+    id: u32,
+    pilots: Vec<u32>,
+    mglt: Option<u32>,
+    starship_class: StarshipClass,
+    hyperdrive_rating: Option<f64>,
+}
+
+impl From<StarshipNested> for Starship {
+    fn from(value: StarshipNested) -> Self {
+        Self {
+            id: value.id,
+            pilots: value.fields.pilots,
+            mglt: value.fields.mglt,
+            starship_class: value.fields.starship_class,
+            hyperdrive_rating: value.fields.hyperdrive_rating,
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, Deserialize, Type)]
+enum StarshipClass {
+    #[serde(alias = "corvette")]
+    Corvette,
+    #[serde(alias = "Star Destroyer")]
+    #[serde(alias = "star destroyer")]
+    StarDestroyer,
+    #[serde(alias = "landing craft")]
+    LandingCraft,
+    #[serde(alias = "Deep Space Mobile Battlestation")]
+    DeepSpaceMobileBattlestation,
+    #[serde(alias = "Light freighter")]
+    LightFreighter,
+    #[serde(alias = "assault starfighter")]
+    #[serde(alias = "Assault Starfighter")]
+    AssaultStarfighter,
+    #[serde(alias = "starfighter")]
+    Starfighter,
+    #[serde(alias = "Star dreadnought")]
+    StarDreadnought,
+    #[serde(alias = "Medium transport")]
+    MediumTransport,
+    #[serde(alias = "Patrol craft")]
+    PatrolCraft,
+    #[serde(alias = "Armed government transport")]
+    ArmedGovernmentTransport,
+    #[serde(alias = "Escort ship")]
+    EscortShip,
+    #[serde(alias = "Star Cruiser")]
+    StarCruiser,
+    #[serde(alias = "Space cruiser")]
+    SpaceCruiser,
+    #[serde(alias = "Droid control ship")]
+    DroidControlShip,
+    #[serde(alias = "yacht")]
+    Yacht,
+    #[serde(alias = "Space Transport")]
+    SpaceTransport,
+    #[serde(alias = "Diplomatic barge")]
+    DiplomaticBarge,
+    #[serde(alias = "freighter")]
+    Freighter,
+    #[serde(alias = "assault ship")]
+    AssaultShip,
+    #[serde(alias = "capital ship")]
+    CapitalShip,
+    #[serde(alias = "transport")]
+    Transport,
+    #[serde(alias = "cruiser")]
+    Cruiser,
 }
 
 #[derive(Debug)]
