@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::fmt::Display;
+use std::ops::RangeInclusive;
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -56,6 +57,7 @@ pub async fn seed() -> anyhow::Result<()> {
     seed_planets(&db_pool).await?;
     let people_species = seed_species(&db_pool).await?;
     seed_people(&db_pool, &people_species).await?;
+    seed_transports(&db_pool).await?;
     unimplemented!()
 }
 
@@ -954,6 +956,97 @@ impl FromStr for EyeColor {
     }
 }
 
+async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
+    let transports: Vec<Transport> = parse_json_file::<Vec<TransportNested>>("transport")
+        .await?
+        .into_iter()
+        .map(Into::into)
+        .collect();
+    println!("transports: {transports:#?}");
+    unimplemented!();
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct TransportNested {
+    fields: TransportNestedFields,
+    #[serde(rename = "pk")]
+    id: u32,
+    #[serde(rename = "model")]
+    _model: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct TransportNestedFields {
+    edited: Timestamp,
+    created: Timestamp,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    consumables: Option<String>,
+    name: String,
+    #[serde(deserialize_with = "deserialize_from_str")]
+    cargo_capacity: f64,
+    #[serde(deserialize_with = "deserialize_from_str_strip_commas_or_unknown")]
+    passengers: Option<u32>,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    max_atmosphering_speed: Option<u32>,
+    #[serde(deserialize_with = "deserialize_single_or_range")]
+    crew: SingleOrRange,
+    #[serde(deserialize_with = "deserialize_from_str_strip_commas_or_unknown")]
+    length: Option<f64>,
+    model: String,
+    #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
+    cost_in_credits: Option<f64>,
+    #[serde(
+        rename = "manufacturer",
+        deserialize_with = "deserialize_comma_separated_or_unknown"
+    )]
+    manufacturers: Option<Vec<String>>,
+}
+
+#[derive(Debug)]
+struct Transport {
+    id: u32,
+    edited: Timestamp,
+    created: Timestamp,
+    consumables: Option<String>,
+    name: String,
+    cargo_capacity: f64,
+    passengers: Option<u32>,
+    max_atmosphering_speed: Option<u32>,
+    crew: SingleOrRange,
+    length: Option<f64>,
+    model: String,
+    cost_in_credits: Option<f64>,
+    manufacturers: Option<Vec<String>>,
+}
+
+impl From<TransportNested> for Transport {
+    fn from(value: TransportNested) -> Self {
+        Self {
+            edited: value.fields.edited,
+            created: value.fields.created,
+            id: value.id,
+            consumables: value.fields.consumables,
+            name: value.fields.name,
+            cargo_capacity: value.fields.cargo_capacity,
+            passengers: value.fields.passengers,
+            max_atmosphering_speed: value.fields.max_atmosphering_speed,
+            crew: value.fields.crew,
+            length: value.fields.length,
+            model: value.fields.model,
+            cost_in_credits: value.fields.cost_in_credits,
+            manufacturers: value.fields.manufacturers,
+        }
+    }
+}
+
+#[derive(Debug)]
+enum SingleOrRange {
+    Single(u32),
+    Range(RangeInclusive<u32>),
+}
+
 // https://github.com/serde-rs/json/issues/317#issuecomment-300251188
 fn deserialize_from_str<'de, TTarget, TDeserializer>(
     deserializer: TDeserializer,
@@ -1018,4 +1111,24 @@ where
         "unknown" | "n/a" | "none" => None,
         str => Some(TTarget::from_str(&str.replace(",", "")).map_err(de::Error::custom)?),
     })
+}
+
+fn deserialize_single_or_range<'de, TDeserializer>(
+    deserializer: TDeserializer,
+) -> Result<SingleOrRange, TDeserializer::Error>
+where
+    TDeserializer: Deserializer<'de>,
+{
+    let str = String::deserialize(deserializer)?.replace(",", "");
+    Ok(
+        if let Some(captures) = regex!(r#"^(\d+)-(\d+)$"#).captures(&str) {
+            SingleOrRange::Range(RangeInclusive::new(
+                captures[1].parse::<u32>().unwrap(),
+                captures[2].parse::<u32>().unwrap(),
+            ))
+        } else {
+            let single = str.parse::<u32>().map_err(de::Error::custom)?;
+            SingleOrRange::Single(single)
+        },
+    )
 }
