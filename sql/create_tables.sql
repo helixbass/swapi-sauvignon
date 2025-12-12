@@ -1,6 +1,6 @@
 CREATE TABLE planets (
-  -- id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  id INT PRIMARY KEY NOT NULL,
+  -- id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id INTEGER PRIMARY KEY NOT NULL,
   edited TIMESTAMPTZ NOT NULL,
   created TIMESTAMPTZ NOT NULL,
   name TEXT NOT NULL,
@@ -32,7 +32,7 @@ CREATE TYPE climate AS ENUM (
 );
 
 CREATE TABLE planet_climates (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   planet_id integer REFERENCES planets (id) NOT NULL,
   climate climate NOT NULL
 );
@@ -94,7 +94,7 @@ CREATE TYPE terrain AS ENUM (
 );
 
 CREATE TABLE planet_terrains (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   planet_id integer REFERENCES planets (id) NOT NULL,
   terrain terrain NOT NULL
 );
@@ -177,7 +177,7 @@ CREATE TYPE haircolor AS ENUM (
 );
 
 CREATE TABLE species (
-  id INT PRIMARY KEY NOT NULL,
+  id INTEGER PRIMARY KEY NOT NULL,
   edited TIMESTAMPTZ NOT NULL,
   created TIMESTAMPTZ NOT NULL,
   name TEXT NOT NULL,
@@ -190,19 +190,19 @@ CREATE TABLE species (
 );
 
 CREATE TABLE species_skin_colors (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   species_id integer REFERENCES species (id) NOT NULL,
   skin_color skincolor NOT NULL
 );
 
 CREATE TABLE species_eye_colors (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   species_id integer REFERENCES species (id) NOT NULL,
   eye_color eyecolor NOT NULL
 );
 
 CREATE TABLE species_hair_colors (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   species_id integer REFERENCES species (id) NOT NULL,
   hair_color haircolor NOT NULL
 );
@@ -210,7 +210,7 @@ CREATE TABLE species_hair_colors (
 CREATE TYPE gender AS ENUM ('Male', 'Female', 'Hermaphrodite');
 
 CREATE TABLE people (
-  id INT PRIMARY KEY NOT NULL,
+  id INTEGER PRIMARY KEY NOT NULL,
   edited TIMESTAMPTZ NOT NULL,
   created TIMESTAMPTZ NOT NULL,
   name TEXT NOT NULL,
@@ -222,35 +222,160 @@ CREATE TABLE people (
 );
 
 CREATE TABLE person_skin_colors (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   person_id integer REFERENCES people (id) NOT NULL,
   skin_color skincolor NOT NULL
 );
 
 CREATE TABLE person_eye_colors (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   person_id integer REFERENCES people (id) NOT NULL,
   eye_color eyecolor NOT NULL
 );
 
 CREATE TABLE person_hair_colors (
-  id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   person_id integer REFERENCES people (id) NOT NULL,
   hair_color haircolor NOT NULL
 );
 
 CREATE TABLE transports (
-  id INT PRIMARY KEY NOT NULL,
+  id INTEGER PRIMARY KEY NOT NULL,
   edited TIMESTAMPTZ NOT NULL,
   created TIMESTAMPTZ NOT NULL,
-  consumable TEXT,
+  consumables TEXT,
   name TEXT NOT NULL,
   cargo_capacity FLOAT,
   passengers INTEGER,
   max_atmosphering_speed INTEGER,
-  crew_start INTEGER not null,
+  crew_start INTEGER,
   crew_end INTEGER,
   length FLOAT,
   model TEXT NOT NULL,
   cost_in_credits FLOAT
+);
+
+CREATE TYPE manufacturer AS ENUM (
+  'CorellianEngineeringCorporation',
+  'KuatDriveYards',
+  'CorelliaMiningCorporation',
+  'SienarFleetSystems',
+  'CyngusSpaceworks',
+  'IncomCorporation',
+  'SoroSuubCorporation',
+  'ImperialDepartmentOfMilitaryResearch',
+  'KoensayrManufacturing',
+  'FondorShipyards',
+  'GallofreeYardsInc',
+  'BespinMotors',
+  'KuatSystemsEngineering',
+  'UbrikkianIndustriesCustomVehicleDivision',
+  'UbrikkianIndustries',
+  'MonCalamariShipyards',
+  'AllianceUndergroundEngineering',
+  'SlaynAndKorpil',
+  'AratechRepulsorCompany',
+  'HoerschKesselDriveInc',
+  'HaorChallEngineering',
+  'BaktoidArmorWorkshop',
+  'OtohGungaBongamekenCooperative',
+  'TheedPalaceSpaceVesselEngineeringCorps',
+  'NubiaStarDrives',
+  'RepublicSienarSystems',
+  'Razalon',
+  'MobquetSwoopsAndSpeeders',
+  'DeslerGizhOutworldMobilityCorporation',
+  'NarglatchAirTechPrefabricatedKit',
+  'BotajefShipyards',
+  'RothanaHeavyEngineering',
+  'HupplaPasaTiscShipwrightsCollective',
+  'RendiliStarDrive',
+  'FreeDacVolunteersEngineeringCorps',
+  'ZGomotTernbuellGuppatCorporation',
+  'AllanteenSixShipyards',
+  'SubproCorporation',
+  'CollaDesigns',
+  'PhlacArphoccAutomataIndustries',
+  'GworiRevolutionaryIndustries',
+  'AppazannaEngineeringWorks',
+  'TechnoUnion',
+  'BaktoidFleetOrdnance',
+  'FeethanOttrawScalableAssemblies'
+);
+
+CREATE TABLE transport_manufacturers (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  transport_id integer REFERENCES transports (id) NOT NULL,
+  manufacturer manufacturer NOT NULL
+);
+
+CREATE TYPE starshipclass AS ENUM(
+  'Corvette',
+  'StarDestroyer',
+  'LandingCraft',
+  'DeepSpaceMobileBattlestation',
+  'LightFreighter',
+  'AssaultStarfighter',
+  'Starfighter',
+  'StarDreadnought',
+  'MediumTransport',
+  'PatrolCraft',
+  'ArmedGovernmentTransport',
+  'EscortShip',
+  'StarCruiser',
+  'SpaceCruiser',
+  'DroidControlShip',
+  'Yacht',
+  'SpaceTransport',
+  'DiplomaticBarge',
+  'Freighter',
+  'AssaultShip',
+  'CapitalShip',
+  'Transport',
+  'Cruiser'
+);
+
+CREATE TABLE starships (
+  id INTEGER PRIMARY KEY NOT NULL,
+  mglt INTEGER,
+  starship_class starshipclass NOT NULL,
+  hyperdrive_rating FLOAT
+);
+
+CREATE TABLE starship_pilots (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  starship_id integer REFERENCES starships (id) NOT NULL,
+  person_id integer REFERENCES people (id) NOT NULL
+);
+
+CREATE TYPE vehicleclass AS ENUM(
+  'Wheeled',
+  'Repulsorcraft',
+  'Starfighter',
+  'Airspeeder',
+  'SpacePlanetaryBomber',
+  'AssaultWalker',
+  'Walker',
+  'SailBarge',
+  'RepulsorcraftCargoSkiff',
+  'Speeder',
+  'LandingCraft',
+  'Submarine',
+  'Gunship',
+  'Transport',
+  'WheeledWalker',
+  'FireSuppressionShip',
+  'DroidStarfighter',
+  'DroidTank'
+);
+
+CREATE TABLE vehicles (
+  id INTEGER PRIMARY KEY NOT NULL,
+  vehicle_class vehicleclass NOT NULL
+);
+
+CREATE TABLE vehicle_pilots (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  vehicle_id integer REFERENCES vehicles (id) NOT NULL,
+  person_id integer REFERENCES people (id) NOT NULL
 );
