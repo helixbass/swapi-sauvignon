@@ -1039,6 +1039,39 @@ async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .collect();
     println!("starships: {starships:#?}");
 
+    let mut query_builder =
+        QueryBuilder::new("INSERT INTO starships (id, mglt, starship_class, hyperdrive_rating)");
+    query_builder.push_values(&starships, |mut builder, starship| {
+        builder
+            .push_bind(i32::try_from(starship.id).unwrap())
+            .push_bind(starship.mglt.map(|mglt| i32::try_from(mglt).unwrap()))
+            .push_bind(starship.starship_class)
+            .push_bind(starship.hyperdrive_rating);
+    });
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
+    let mut query_builder =
+        QueryBuilder::new("INSERT INTO starship_pilots (starship_id, person_id)");
+    query_builder.push_values(
+        starships.iter().flat_map(|starship| {
+            starship
+                .pilots
+                .clone()
+                .into_iter()
+                .map(|pilot_id| (starship.id, pilot_id))
+        }),
+        |mut builder, (starship_id, pilot_id)| {
+            builder
+                .push_bind(i32::try_from(starship_id).unwrap())
+                .push_bind(i32::try_from(pilot_id).unwrap());
+        },
+    );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
     let vehicles: Vec<Vehicle> = parse_json_file::<Vec<VehicleNested>>("vehicles")
         .await?
         .into_iter()
