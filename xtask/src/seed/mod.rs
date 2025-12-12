@@ -70,7 +70,6 @@ async fn seed_planets(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .into_iter()
         .map(Into::into)
         .collect();
-    println!("planets: {planets:#?}");
 
     let mut query_builder = QueryBuilder::new("INSERT INTO planets (id, edited, created, name, surface_water, diameter, rotation_period, gravity, orbital_period, population)");
     query_builder.push_values(&planets, |mut builder, planet| {
@@ -410,7 +409,6 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
         .collect();
 
     let species: Vec<Species> = species.into_iter().map(Into::into).collect();
-    println!("species: {species:#?}");
 
     let mut query_builder = QueryBuilder::new("INSERT INTO species (id, edited, created, name, classification, designation, language, homeworld, average_lifespan, average_height)");
     query_builder.push_values(&species, |mut builder, species| {
@@ -626,7 +624,6 @@ async fn seed_people(
         .into_iter()
         .map(Into::into)
         .collect();
-    println!("people: {people:#?}");
 
     let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year, species_id)");
     query_builder.push_values(&people, |mut builder, person| {
@@ -970,7 +967,6 @@ async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .into_iter()
         .map(Into::into)
         .collect();
-    println!("transports: {transports:#?}");
 
     let mut query_builder = QueryBuilder::new("INSERT INTO transports (id, edited, created, consumables, name, cargo_capacity, passengers, max_atmosphering_speed, crew_start, crew_end, length, model, cost_in_credits)");
     query_builder.push_values(&transports, |mut builder, transport| {
@@ -1045,7 +1041,6 @@ async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .into_iter()
         .map(Into::into)
         .collect();
-    println!("starships: {starships:#?}");
 
     let mut query_builder = QueryBuilder::new(
         "INSERT INTO starships (id, mglt, starship_class, hyperdrive_rating, transport_id)",
@@ -1102,7 +1097,6 @@ async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .into_iter()
         .map(Into::into)
         .collect();
-    println!("vehicles: {vehicles:#?}");
 
     let mut query_builder =
         QueryBuilder::new("INSERT INTO vehicles (id, vehicle_class, transport_id)");
@@ -1526,7 +1520,6 @@ async fn seed_films(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .into_iter()
         .map(Into::into)
         .collect();
-    println!("films: {films:#?}");
 
     let mut query_builder = QueryBuilder::new("INSERT INTO films (id, edited, created, title, episode_id, director, release_date, opening_crawl)");
     query_builder.push_values(&films, |mut builder, film| {
@@ -1744,6 +1737,7 @@ impl FromStr for ProducerOrDirector {
 }
 
 // https://github.com/serde-rs/json/issues/317#issuecomment-300251188
+#[allow(dead_code)]
 fn deserialize_from_str<'de, TTarget, TDeserializer>(
     deserializer: TDeserializer,
 ) -> Result<TTarget, TDeserializer::Error>
@@ -1858,6 +1852,7 @@ where
     })
 }
 
+#[allow(dead_code)]
 fn deserialize_single_or_range<'de, TDeserializer>(
     deserializer: TDeserializer,
 ) -> Result<SingleOrRange, TDeserializer::Error>
