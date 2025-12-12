@@ -970,6 +970,13 @@ async fn seed_transports(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
         .map(Into::into)
         .collect();
     println!("starships: {starships:#?}");
+
+    let vehicles: Vec<Vehicle> = parse_json_file::<Vec<VehicleNested>>("vehicles")
+        .await?
+        .into_iter()
+        .map(Into::into)
+        .collect();
+    println!("vehicles: {vehicles:#?}");
     unimplemented!();
 }
 
@@ -1146,6 +1153,81 @@ enum StarshipClass {
 enum SingleOrRange {
     Single(u32),
     Range(RangeInclusive<u32>),
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct VehicleNested {
+    fields: VehicleNestedFields,
+    #[serde(rename = "pk")]
+    id: u32,
+    #[serde(rename = "model")]
+    _model: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct VehicleNestedFields {
+    pilots: Vec<u32>,
+    vehicle_class: VehicleClass,
+}
+
+#[derive(Debug)]
+struct Vehicle {
+    id: u32,
+    pilots: Vec<u32>,
+    vehicle_class: VehicleClass,
+}
+
+impl From<VehicleNested> for Vehicle {
+    fn from(value: VehicleNested) -> Self {
+        Self {
+            id: value.id,
+            pilots: value.fields.pilots,
+            vehicle_class: value.fields.vehicle_class,
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, Deserialize, Type)]
+enum VehicleClass {
+    #[serde(alias = "wheeled")]
+    Wheeled,
+    #[serde(alias = "repulsorcraft")]
+    Repulsorcraft,
+    #[serde(alias = "starfighter")]
+    Starfighter,
+    #[serde(alias = "airspeeder")]
+    #[serde(alias = "air speeder")]
+    Airspeeder,
+    #[serde(alias = "space/planetary bomber")]
+    SpacePlanetaryBomber,
+    #[serde(alias = "assault walker")]
+    AssaultWalker,
+    #[serde(alias = "walker")]
+    Walker,
+    #[serde(alias = "sail barge")]
+    SailBarge,
+    #[serde(alias = "repulsorcraft cargo skiff")]
+    RepulsorcraftCargoSkiff,
+    #[serde(alias = "speeder")]
+    Speeder,
+    #[serde(alias = "landing craft")]
+    LandingCraft,
+    #[serde(alias = "submarine")]
+    Submarine,
+    #[serde(alias = "gunship")]
+    Gunship,
+    #[serde(alias = "transport")]
+    Transport,
+    #[serde(alias = "wheeled walker")]
+    WheeledWalker,
+    #[serde(alias = "fire suppression ship")]
+    FireSuppressionShip,
+    #[serde(alias = "droid starfighter")]
+    DroidStarfighter,
+    #[serde(alias = "droid tank")]
+    DroidTank,
 }
 
 // https://github.com/serde-rs/json/issues/317#issuecomment-300251188
