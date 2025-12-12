@@ -1099,6 +1099,9 @@ enum Manufacturer {
     PhlacArphoccAutomataIndustries,
     GworiRevolutionaryIndustries,
     AppazannaEngineeringWorks,
+    TechnoUnion,
+    BaktoidFleetOrdnance,
+    FeethanOttrawScalableAssemblies,
 }
 
 impl FromStr for Manufacturer {
@@ -1160,6 +1163,9 @@ impl FromStr for Manufacturer {
             "Phlac-Arphocc Automata Industries" => Ok(Self::PhlacArphoccAutomataIndustries),
             "Gwori Revolutionary Industries" => Ok(Self::GworiRevolutionaryIndustries),
             "Appazanna Engineering Works" => Ok(Self::AppazannaEngineeringWorks),
+            "Techno Union" => Ok(Self::TechnoUnion),
+            "Baktoid Fleet Ordnance" => Ok(Self::BaktoidFleetOrdnance),
+            "Feethan Ottraw Scalable Assemblies" => Ok(Self::FeethanOttrawScalableAssemblies),
             _ => Err("Unknown manufacturer"),
         }
     }
