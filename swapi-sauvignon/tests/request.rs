@@ -20,6 +20,9 @@ async fn test_all_planets() {
             {
               allPlanets {
                 name
+                # films {
+                #   name
+                # }
               }
             }
         "#,
