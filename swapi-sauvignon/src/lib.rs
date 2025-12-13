@@ -1,5 +1,4 @@
-use sauvignon::{schema, Response, Schema};
-use sqlx::{Pool, Postgres};
+use sauvignon::{schema, Schema};
 
 pub fn get_schema() -> Schema {
     schema! {
@@ -22,6 +21,7 @@ pub fn get_schema() -> Schema {
             }
             Species => {
                 fields => [
+                    averageHeight => optional_float_column()
                     name => string_column()
                     // TODO: should be able to be just
                     // has_many() (with no args)?
@@ -52,8 +52,4 @@ pub fn get_schema() -> Schema {
             }
         ]
     }
-}
-
-pub async fn request(document_str: &str, schema: &Schema, db_pool: &Pool<Postgres>) -> Response {
-    schema.request(document_str, db_pool).await
 }

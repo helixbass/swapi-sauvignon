@@ -57,6 +57,7 @@ async fn test_all_species() {
             {
               allSpecies {
                 name
+                averageHeight
                 people {
                   name
                 }
@@ -72,6 +73,16 @@ async fn test_all_species() {
                     .as_str()
                     .unwrap(),
                 "Human"
+            );
+            assert_eq!(
+                _q("$.data.allSpecies[0].averageHeight", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                180.0
             );
             assert_eq!(_q("$.data.allSpecies[0].people.*", response).len(), 35);
             assert_eq!(
