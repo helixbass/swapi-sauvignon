@@ -58,6 +58,7 @@ async fn test_all_species() {
               allSpecies {
                 name
                 averageHeight
+                averageLifespan
                 people {
                   name
                 }
@@ -83,6 +84,16 @@ async fn test_all_species() {
                     .as_f64()
                     .unwrap(),
                 180.0
+            );
+            assert_eq!(
+                _q("$.data.allSpecies[0].averageLifespan", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_u64()
+                    .unwrap(),
+                120
             );
             assert_eq!(_q("$.data.allSpecies[0].people.*", response).len(), 35);
             assert_eq!(

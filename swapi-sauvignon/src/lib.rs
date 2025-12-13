@@ -22,6 +22,7 @@ pub fn get_schema() -> Schema {
             Species => {
                 fields => [
                     averageHeight => optional_float_column()
+                    averageLifespan => optional_int_column()
                     name => string_column()
                     // TODO: should be able to be just
                     // has_many() (with no args)?
