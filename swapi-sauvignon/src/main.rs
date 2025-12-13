@@ -1,13 +1,6 @@
 use std::sync::Arc;
 
-use sauvignon_axum::{
-    axum::{
-        self,
-        routing::{get, post},
-        Extension, Router,
-    },
-    graphiql, graphql,
-};
+use sauvignon_axum::{axum, simple_app};
 use tokio::net::TcpListener;
 
 use shared::get_db_pool;
@@ -18,14 +11,11 @@ async fn main() -> anyhow::Result<()> {
     let schema = get_schema();
     let db_pool = get_db_pool().await?;
 
-    let app = Router::new()
-        .route("/graphql", post(graphql))
-        .route("/graphiql", get(graphiql("/graphql")))
-        .layer(Extension(Arc::new(schema)))
-        .layer(Extension(db_pool));
-
-    let listener = TcpListener::bind("0.0.0.0:3001").await?;
-    axum::serve(listener, app).await?;
+    axum::serve(
+        TcpListener::bind("0.0.0.0:3001").await?,
+        simple_app(Arc::new(schema), db_pool),
+    )
+    .await?;
 
     Ok(())
 }
