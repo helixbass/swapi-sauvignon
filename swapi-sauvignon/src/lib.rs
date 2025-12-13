@@ -7,14 +7,17 @@ pub fn get_schema() -> Schema {
             Planet => {
                 fields => [
                     name => string_column()
-                    // films => has_many(
-                    //     through => film_planets
-                    // )
+                    films => has_many(
+                        // TODO: update when `type` has a default
+                        // to remove `type` here
+                        type => Film
+                        through => film_planets
+                    )
                 ]
             }
             Film => {
                 fields => [
-                    name => string_column()
+                    title => string_column()
                 ]
             }
             Species => {

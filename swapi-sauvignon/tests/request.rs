@@ -20,9 +20,9 @@ async fn test_all_planets() {
             {
               allPlanets {
                 name
-                # films {
-                #   name
-                # }
+                films {
+                  title
+                }
               }
             }
         "#,
@@ -35,6 +35,15 @@ async fn test_all_planets() {
                     .as_str()
                     .unwrap(),
                 "Tatooine"
+            );
+            assert_eq!(_q("$.data.allPlanets[0].films.*", response).len(), 5);
+            assert_eq!(
+                _q("$.data.allPlanets[0].films[0].title", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "A New Hope"
             );
         },
     )
