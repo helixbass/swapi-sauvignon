@@ -20,6 +20,9 @@ async fn test_all_planets() {
             {
               allPlanets {
                 name
+                films {
+                  title
+                }
               }
             }
         "#,
@@ -32,6 +35,52 @@ async fn test_all_planets() {
                     .as_str()
                     .unwrap(),
                 "Tatooine"
+            );
+            assert_eq!(_q("$.data.allPlanets[0].films.*", response).len(), 5);
+            assert_eq!(
+                _q("$.data.allPlanets[0].films[0].title", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "A New Hope"
+            );
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn test_all_species() {
+    request_test(
+        r#"
+            {
+              allSpecies {
+                name
+                people {
+                  name
+                }
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(_q("$.data.allSpecies.*", response).len(), 37);
+            assert_eq!(
+                _q("$.data.allSpecies[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Human"
+            );
+            assert_eq!(_q("$.data.allSpecies[0].people.*", response).len(), 35);
+            assert_eq!(
+                _q("$.data.allSpecies[0].people[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Luke Skywalker"
             );
         },
     )
