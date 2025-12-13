@@ -2152,7 +2152,10 @@ name = "shared"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "sauvignon",
+ "serde",
  "sqlx",
+ "strum",
 ]
 
 [[package]]
@@ -2507,6 +2510,7 @@ dependencies = [
  "serde_json_path",
  "shared",
  "sqlx",
+ "strum",
  "tokio",
 ]
 

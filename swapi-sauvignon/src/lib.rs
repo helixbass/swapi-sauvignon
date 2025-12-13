@@ -1,5 +1,7 @@
 use sauvignon::{schema, Schema};
 
+use shared::SpeciesClassification;
+
 pub fn get_schema() -> Schema {
     schema! {
         types => [
@@ -23,6 +25,9 @@ pub fn get_schema() -> Schema {
                 fields => [
                     averageHeight => optional_float_column()
                     averageLifespan => optional_int_column()
+                    classification => optional_enum_column(
+                        type => SpeciesClassification
+                    )
                     name => string_column()
                     // TODO: should be able to be just
                     // has_many() (with no args)?
@@ -51,6 +56,9 @@ pub fn get_schema() -> Schema {
                     ids => id_column_list()
                 ]
             }
+        ]
+        enums => [
+            SpeciesClassification,
         ]
     }
 }
