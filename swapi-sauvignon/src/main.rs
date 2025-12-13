@@ -1,8 +1,12 @@
 use std::sync::Arc;
 
 use sauvignon_axum::{
-    axum::{self, routing::post, Extension, Router},
-    graphql,
+    axum::{
+        self,
+        routing::{get, post},
+        Extension, Router,
+    },
+    graphiql, graphql,
 };
 use tokio::net::TcpListener;
 
@@ -16,6 +20,7 @@ async fn main() -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/graphql", post(graphql))
+        .route("/graphiql", get(graphiql("/graphql")))
         .layer(Extension(Arc::new(schema)))
         .layer(Extension(db_pool));
 
