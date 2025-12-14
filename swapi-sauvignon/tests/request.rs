@@ -197,6 +197,25 @@ async fn test_all_planets() {
                     .unwrap(),
                 ()
             );
+            assert_eq!(_q("$.data.allPlanets[0].climates.*", response).len(), 1);
+            assert_eq!(
+                _q("$.data.allPlanets[0].climates[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "ARID"
+            );
+            assert_eq!(_q("$.data.allPlanets[2].climates.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allPlanets[2].climates[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "TEMPERATE"
+            );
+            assert_eq!(_q("$.data.allPlanets[27].climates.*", response).len(), 0);
         },
     )
     .await;
