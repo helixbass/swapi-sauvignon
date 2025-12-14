@@ -449,6 +449,7 @@ async fn test_all_films() {
                 director
                 episodeId
                 id
+                openingCrawl
               }
             }
         "#,
@@ -512,6 +513,14 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "1"
+            );
+            assert_eq!(
+                &_q("$.data.allFilms[0].openingCrawl", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap()[..5],
+                "It is"
             );
         },
     )
