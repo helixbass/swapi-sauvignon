@@ -316,3 +316,53 @@ impl FromStr for Terrain {
         }
     }
 }
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Type, VariantNames, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "kebab-case")]
+pub enum EyeColor {
+    Brown,
+    Blue,
+    Green,
+    Hazel,
+    Grey,
+    Amber,
+    Yellow,
+    Golden,
+    Red,
+    Black,
+    BlueGray,
+    Orange,
+    Pink,
+    Gold,
+    White,
+    Indigo,
+    Silver,
+}
+
+impl FromStr for EyeColor {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "brown" => Ok(Self::Brown),
+            "blue" => Ok(Self::Blue),
+            "green" => Ok(Self::Green),
+            "hazel" => Ok(Self::Hazel),
+            "grey" => Ok(Self::Grey),
+            "amber" => Ok(Self::Amber),
+            "yellow" => Ok(Self::Yellow),
+            "golden" => Ok(Self::Golden),
+            "red" => Ok(Self::Red),
+            "black" => Ok(Self::Black),
+            "blue-gray" => Ok(Self::BlueGray),
+            "orange" => Ok(Self::Orange),
+            "pink" => Ok(Self::Pink),
+            "gold" => Ok(Self::Gold),
+            "white" => Ok(Self::White),
+            "indigo" => Ok(Self::Indigo),
+            "silver" => Ok(Self::Silver),
+            _ => Err("Unknown eye color"),
+        }
+    }
+}

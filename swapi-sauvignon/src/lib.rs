@@ -1,6 +1,6 @@
 use sauvignon::{schema, Schema};
 
-use shared::{Climate, Language, SpeciesClassification, SpeciesDesignation, Terrain};
+use shared::{Climate, EyeColor, Language, SpeciesClassification, SpeciesDesignation, Terrain};
 
 pub fn get_schema() -> Schema {
     schema! {
@@ -54,6 +54,10 @@ pub fn get_schema() -> Schema {
                         type => SpeciesDesignation
                     )
                     edited => timestamp_column()
+                    eyeColors => has_many(
+                        type => EyeColor
+                        through => species_eye_colors
+                    )
                     name => string_column()
                     // TODO: should be able to be just
                     // has_many() (with no args)?
@@ -103,6 +107,7 @@ pub fn get_schema() -> Schema {
             Language,
             Climate,
             Terrain,
+            EyeColor,
         ]
     }
 }

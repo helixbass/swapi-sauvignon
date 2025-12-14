@@ -265,6 +265,7 @@ async fn test_all_species() {
                 id
                 language
                 edited
+                eyeColors
               }
             }
         "#,
@@ -396,6 +397,16 @@ async fn test_all_species() {
                     .unwrap(),
                 ()
             );
+            assert_eq!(_q("$.data.allSpecies[0].eyeColors.*", response).len(), 6);
+            assert_eq!(
+                _q("$.data.allSpecies[0].eyeColors[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "BROWN"
+            );
+            assert_eq!(_q("$.data.allSpecies[1].eyeColors.*", response).len(), 0);
         },
     )
     .await;

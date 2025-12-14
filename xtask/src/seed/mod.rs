@@ -11,7 +11,9 @@ use serde::{
     de::{self, DeserializeOwned, Deserializer},
     Deserialize,
 };
-use shared::{get_db_pool, Climate, Language, SpeciesClassification, SpeciesDesignation, Terrain};
+use shared::{
+    get_db_pool, Climate, EyeColor, Language, SpeciesClassification, SpeciesDesignation, Terrain,
+};
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
 use tokio::fs::read_to_string;
@@ -288,6 +290,9 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
         },
     );
 
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
     let mut query_builder =
         QueryBuilder::new("INSERT INTO species_eye_colors (species_id, eye_color)");
     query_builder.push_values(
@@ -306,6 +311,9 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
         },
     );
 
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
     let mut query_builder =
         QueryBuilder::new("INSERT INTO species_hair_colors (species_id, hair_color)");
     query_builder.push_values(
@@ -323,6 +331,9 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
                 .push_bind(hair_color);
         },
     );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
 
     Ok(people_species)
 }
@@ -692,55 +703,6 @@ impl FromStr for HairColor {
             "auburn" => Ok(Self::Auburn),
             "white" => Ok(Self::White),
             _ => Err("Unknown hair color"),
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-#[serde(rename_all = "kebab-case")]
-enum EyeColor {
-    Brown,
-    Blue,
-    Green,
-    Hazel,
-    Grey,
-    Amber,
-    Yellow,
-    Golden,
-    Red,
-    Black,
-    BlueGray,
-    Orange,
-    Pink,
-    Gold,
-    White,
-    Indigo,
-    Silver,
-}
-
-impl FromStr for EyeColor {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "brown" => Ok(Self::Brown),
-            "blue" => Ok(Self::Blue),
-            "green" => Ok(Self::Green),
-            "hazel" => Ok(Self::Hazel),
-            "grey" => Ok(Self::Grey),
-            "amber" => Ok(Self::Amber),
-            "yellow" => Ok(Self::Yellow),
-            "golden" => Ok(Self::Golden),
-            "red" => Ok(Self::Red),
-            "black" => Ok(Self::Black),
-            "blue-gray" => Ok(Self::BlueGray),
-            "orange" => Ok(Self::Orange),
-            "pink" => Ok(Self::Pink),
-            "gold" => Ok(Self::Gold),
-            "white" => Ok(Self::White),
-            "indigo" => Ok(Self::Indigo),
-            "silver" => Ok(Self::Silver),
-            _ => Err("Unknown eye color"),
         }
     }
 }
