@@ -900,6 +900,31 @@ async fn test_all_starships() {
     .await;
 }
 
+#[tokio::test]
+async fn test_all_vehicles() {
+    request_test(
+        r#"
+            {
+              allVehicles {
+                vehicleClass
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(_q("$.data.allVehicles.*", response).len(), 39);
+            assert_eq!(
+                _q("$.data.allVehicles[0].vehicleClass", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "WHEELED"
+            );
+        },
+    )
+    .await;
+}
+
 fn _q<'a>(query: &str, response: &'a serde_json::Value) -> NodeList<'a> {
     let path = JsonPath::parse(query).unwrap();
     path.query(response)

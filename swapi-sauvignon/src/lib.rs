@@ -222,6 +222,12 @@ pub fn get_schema() -> Schema {
                     ids => id_column_list()
                 ]
             }
+            allVehicles => {
+                type => [Vehicle!]!
+                internal_dependencies => [
+                    ids => id_column_list()
+                ]
+            }
         ]
         enums => [
             SpeciesClassification,
