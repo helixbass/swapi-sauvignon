@@ -159,6 +159,10 @@ pub fn get_schema() -> Schema {
                         type => Species
                         optional => true
                     )
+                    starships => has_many(
+                        type => Starship
+                        through => starship_pilots
+                    )
                 ]
             }
             Starship => {

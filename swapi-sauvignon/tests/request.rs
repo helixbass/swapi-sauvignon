@@ -611,6 +611,9 @@ async fn test_all_people() {
                 species {
                   name
                 }
+                starships {
+                  starshipClass
+                }
               }
             }
         "#,
@@ -786,6 +789,15 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "Human"
+            );
+            assert_eq!(_q("$.data.allPeople[12].starships.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allPeople[12].starships[0].starshipClass", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "LIGHT_FREIGHTER"
             );
         },
     )
