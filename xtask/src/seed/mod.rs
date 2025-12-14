@@ -11,7 +11,7 @@ use serde::{
     de::{self, DeserializeOwned, Deserializer},
     Deserialize,
 };
-use shared::{get_db_pool, SpeciesClassification};
+use shared::{get_db_pool, SpeciesClassification, SpeciesDesignation};
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
 use tokio::fs::read_to_string;
@@ -561,25 +561,6 @@ impl From<SpeciesNested> for Species {
             homeworld: value.fields.homeworld,
             average_lifespan: value.fields.average_lifespan,
             average_height: value.fields.average_height,
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-#[serde(rename_all = "snake_case")]
-enum SpeciesDesignation {
-    Sentient,
-    Reptilian,
-}
-
-impl FromStr for SpeciesDesignation {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "sentient" => Ok(Self::Sentient),
-            "reptilian" => Ok(Self::Reptilian),
-            _ => Err("Unknown species designation"),
         }
     }
 }

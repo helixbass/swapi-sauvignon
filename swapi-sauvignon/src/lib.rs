@@ -1,6 +1,6 @@
 use sauvignon::{schema, Schema};
 
-use shared::SpeciesClassification;
+use shared::{SpeciesClassification, SpeciesDesignation};
 
 pub fn get_schema() -> Schema {
     schema! {
@@ -29,6 +29,9 @@ pub fn get_schema() -> Schema {
                         type => SpeciesClassification
                     )
                     created => timestamp_column()
+                    designation => enum_column(
+                        type => SpeciesDesignation
+                    )
                     name => string_column()
                     // TODO: should be able to be just
                     // has_many() (with no args)?
@@ -60,6 +63,7 @@ pub fn get_schema() -> Schema {
         ]
         enums => [
             SpeciesClassification,
+            SpeciesDesignation,
         ]
     }
 }

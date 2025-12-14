@@ -44,3 +44,23 @@ impl FromStr for SpeciesClassification {
         }
     }
 }
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Type, VariantNames, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "snake_case")]
+pub enum SpeciesDesignation {
+    Sentient,
+    Reptilian,
+}
+
+impl FromStr for SpeciesDesignation {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "sentient" => Ok(Self::Sentient),
+            "reptilian" => Ok(Self::Reptilian),
+            _ => Err("Unknown species designation"),
+        }
+    }
+}
