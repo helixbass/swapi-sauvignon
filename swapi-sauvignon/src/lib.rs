@@ -130,6 +130,10 @@ pub fn get_schema() -> Schema {
                     birthYear => optional_string_column()
                     created => timestamp_column()
                     edited => timestamp_column()
+                    eyeColors => has_many(
+                        type => EyeColor
+                        through => person_eye_colors
+                    )
                 ]
             }
             Starship => {

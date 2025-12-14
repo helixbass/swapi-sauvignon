@@ -595,6 +595,7 @@ async fn test_all_people() {
                 birthYear
                 created
                 edited
+                eyeColors
               }
             }
         "#,
@@ -631,6 +632,24 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "2014-12-20T21:17:56.891Z"
+            );
+            assert_eq!(_q("$.data.allPeople[0].eyeColors.*", response).len(), 1);
+            assert_eq!(
+                _q("$.data.allPeople[0].eyeColors[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "BLUE"
+            );
+            assert_eq!(_q("$.data.allPeople[73].eyeColors.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allPeople[73].eyeColors[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "RED"
             );
         },
     )
