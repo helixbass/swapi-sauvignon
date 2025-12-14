@@ -593,6 +593,8 @@ async fn test_all_people() {
               allPeople {
                 name
                 birthYear
+                created
+                edited
               }
             }
         "#,
@@ -613,6 +615,22 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "19BBY"
+            );
+            assert_eq!(
+                _q("$.data.allPeople[0].created", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-09T13:50:51.644Z"
+            );
+            assert_eq!(
+                _q("$.data.allPeople[0].edited", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-20T21:17:56.891Z"
             );
         },
     )

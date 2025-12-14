@@ -128,6 +128,8 @@ pub fn get_schema() -> Schema {
                 fields => [
                     name => string_column()
                     birthYear => optional_string_column()
+                    created => timestamp_column()
+                    edited => timestamp_column()
                 ]
             }
             Starship => {
