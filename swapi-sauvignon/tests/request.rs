@@ -23,6 +23,8 @@ async fn test_all_planets() {
                 films {
                   title
                 }
+                created
+                edited
               }
             }
         "#,
@@ -44,6 +46,22 @@ async fn test_all_planets() {
                     .as_str()
                     .unwrap(),
                 "A New Hope"
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[0].created", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-09T13:50:49.641Z"
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[0].edited", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-20T20:58:18.411Z"
             );
         },
     )
@@ -73,6 +91,7 @@ async fn test_all_species() {
                 }
                 id
                 language
+                edited
               }
             }
         "#,
@@ -139,12 +158,12 @@ async fn test_all_species() {
                 "SENTIENT"
             );
             assert_eq!(
-                _q("$.data.allSpecies[0].created", response)
+                _q("$.data.allSpecies[0].edited", response)
                     .exactly_one()
                     .unwrap()
                     .as_str()
                     .unwrap(),
-                "2014-12-10T13:52:11.567Z"
+                "2014-12-20T21:36:42.136Z"
             );
             assert_eq!(_q("$.data.allSpecies[0].people.*", response).len(), 35);
             assert_eq!(

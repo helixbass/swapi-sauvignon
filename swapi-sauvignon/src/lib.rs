@@ -14,6 +14,8 @@ pub fn get_schema() -> Schema {
                         type => Film
                         through => film_planets
                     )
+                    created => timestamp_column()
+                    edited => timestamp_column()
                 ]
             }
             Film => {
