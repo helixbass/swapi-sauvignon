@@ -28,6 +28,7 @@ pub fn get_schema() -> Schema {
                     classification => optional_enum_column(
                         type => SpeciesClassification
                     )
+                    created => timestamp_column()
                     name => string_column()
                     // TODO: should be able to be just
                     // has_many() (with no args)?
