@@ -826,6 +826,7 @@ async fn test_all_starships() {
                 pilots {
                   name
                 }
+                mglt
               }
             }
         "#,
@@ -847,6 +848,24 @@ async fn test_all_starships() {
                     .as_str()
                     .unwrap(),
                 "Chewbacca"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].mglt", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                60
+            );
+            assert_eq!(
+                _q("$.data.allStarships[16].mglt", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )

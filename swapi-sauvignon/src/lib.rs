@@ -178,6 +178,7 @@ pub fn get_schema() -> Schema {
                     starshipClass => enum_column(
                         type => StarshipClass
                     )
+                    mglt => optional_int_column()
                 ]
             }
             Vehicle => {
