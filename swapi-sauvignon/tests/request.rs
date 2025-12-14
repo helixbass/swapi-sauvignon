@@ -828,6 +828,7 @@ async fn test_all_starships() {
                 }
                 mglt
                 id
+                hyperdriveRating
               }
             }
         "#,
@@ -875,6 +876,24 @@ async fn test_all_starships() {
                     .as_str()
                     .unwrap(),
                 "2"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].hyperdriveRating", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                2.0
+            );
+            assert_eq!(
+                _q("$.data.allStarships[22].hyperdriveRating", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )

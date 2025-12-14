@@ -180,6 +180,7 @@ pub fn get_schema() -> Schema {
                     )
                     mglt => optional_int_column()
                     id => id_column()
+                    hyperdriveRating => optional_float_column()
                 ]
             }
             Vehicle => {
