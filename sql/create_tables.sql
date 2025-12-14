@@ -253,7 +253,7 @@ CREATE TABLE people (
   gender gender,
   height INTEGER,
   mass FLOAT,
-  homeworld integer REFERENCES planets (id) NOT NULL,
+  homeworld_id integer REFERENCES planets (id) NOT NULL,
   birth_year TEXT,
   species_id integer REFERENCES species (id)
 );

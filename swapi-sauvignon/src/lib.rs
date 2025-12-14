@@ -21,6 +21,10 @@ pub fn get_schema() -> Schema {
                     id => id_column()
                     orbitalPeriod => optional_int_column()
                     population => optional_float_column()
+                    residents => has_many(
+                        type => Person
+                        foreign_key => homeworld_id
+                    )
                 ]
             }
             Film => {

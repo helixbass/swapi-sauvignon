@@ -575,7 +575,7 @@ async fn seed_people(
         .map(Into::into)
         .collect();
 
-    let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year, species_id)");
+    let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld_id, birth_year, species_id)");
     query_builder.push_values(&people, |mut builder, person| {
         builder
             .push_bind(i32::try_from(person.id).unwrap())

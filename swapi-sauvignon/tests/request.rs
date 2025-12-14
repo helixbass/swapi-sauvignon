@@ -30,6 +30,9 @@ async fn test_all_planets() {
                 id
                 orbitalPeriod
                 population
+                residents {
+                  name
+                }
               }
             }
         "#,
@@ -145,6 +148,15 @@ async fn test_all_planets() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(_q("$.data.allPlanets[36].residents.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allPlanets[36].residents[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Bib Fortuna"
             );
         },
     )
