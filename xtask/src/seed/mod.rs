@@ -12,7 +12,7 @@ use serde::{
     Deserialize,
 };
 use shared::{
-    get_db_pool, Climate, EyeColor, HairColor, Language, ProducerOrDirector, SkinColor,
+    get_db_pool, Climate, EyeColor, Gender, HairColor, Language, ProducerOrDirector, SkinColor,
     SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
 };
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
@@ -582,27 +582,6 @@ impl From<PersonNested> for Person {
             mass: value.fields.mass,
             homeworld: value.fields.homeworld,
             birth_year: value.fields.birth_year,
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-#[serde(rename_all = "snake_case")]
-enum Gender {
-    Male,
-    Female,
-    Hermaphrodite,
-}
-
-impl FromStr for Gender {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "male" => Ok(Self::Male),
-            "female" => Ok(Self::Female),
-            "hermaphrodite" => Ok(Self::Hermaphrodite),
-            _ => Err("Unknown gender"),
         }
     }
 }

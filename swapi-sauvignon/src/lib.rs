@@ -1,8 +1,8 @@
 use sauvignon::{schema, Schema};
 
 use shared::{
-    Climate, EyeColor, HairColor, Language, ProducerOrDirector, SkinColor, SpeciesClassification,
-    SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
+    Climate, EyeColor, Gender, HairColor, Language, ProducerOrDirector, SkinColor,
+    SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
 };
 
 pub fn get_schema() -> Schema {
@@ -138,6 +138,9 @@ pub fn get_schema() -> Schema {
                         type => Film
                         through => film_characters
                     )
+                    gender => optional_enum_column(
+                        type => Gender
+                    )
                 ]
             }
             Starship => {
@@ -193,6 +196,7 @@ pub fn get_schema() -> Schema {
             ProducerOrDirector,
             StarshipClass,
             VehicleClass,
+            Gender,
         ]
     }
 }

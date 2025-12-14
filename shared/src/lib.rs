@@ -557,6 +557,7 @@ pub enum StarshipClass {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Type, VariantNames, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum VehicleClass {
     #[serde(alias = "wheeled")]
     Wheeled,
@@ -595,4 +596,26 @@ pub enum VehicleClass {
     DroidStarfighter,
     #[serde(alias = "droid tank")]
     DroidTank,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Type, VariantNames, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "snake_case")]
+pub enum Gender {
+    Male,
+    Female,
+    Hermaphrodite,
+}
+
+impl FromStr for Gender {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "male" => Ok(Self::Male),
+            "female" => Ok(Self::Female),
+            "hermaphrodite" => Ok(Self::Hermaphrodite),
+            _ => Err("Unknown gender"),
+        }
+    }
 }

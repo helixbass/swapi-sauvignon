@@ -599,6 +599,7 @@ async fn test_all_people() {
                 films {
                   title
                 }
+                gender
               }
             }
         "#,
@@ -662,6 +663,22 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "A New Hope"
+            );
+            assert_eq!(
+                _q("$.data.allPeople[0].gender", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "MALE"
+            );
+            assert_eq!(
+                _q("$.data.allPeople[1].gender", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )
