@@ -592,6 +592,7 @@ async fn test_all_people() {
             {
               allPeople {
                 name
+                birthYear
               }
             }
         "#,
@@ -604,6 +605,14 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "Luke Skywalker"
+            );
+            assert_eq!(
+                _q("$.data.allPeople[0].birthYear", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "19BBY"
             );
         },
     )

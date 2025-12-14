@@ -127,6 +127,7 @@ pub fn get_schema() -> Schema {
             Person => {
                 fields => [
                     name => string_column()
+                    birthYear => optional_string_column()
                 ]
             }
             Starship => {
