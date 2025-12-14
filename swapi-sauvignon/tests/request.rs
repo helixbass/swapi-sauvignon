@@ -607,6 +607,7 @@ async fn test_all_people() {
                 }
                 id
                 mass
+                skinColors
               }
             }
         "#,
@@ -756,6 +757,24 @@ async fn test_all_people() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(_q("$.data.allPeople[0].skinColors.*", response).len(), 1);
+            assert_eq!(
+                _q("$.data.allPeople[0].skinColors[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "FAIR"
+            );
+            assert_eq!(_q("$.data.allPeople[2].skinColors.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allPeople[2].skinColors[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "WHITE"
             );
         },
     )

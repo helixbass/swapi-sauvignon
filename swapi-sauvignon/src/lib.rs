@@ -151,6 +151,10 @@ pub fn get_schema() -> Schema {
                     )
                     id => id_column()
                     mass => optional_float_column()
+                    skinColors => has_many(
+                        type => SkinColor
+                        through => person_skin_colors
+                    )
                 ]
             }
             Starship => {
