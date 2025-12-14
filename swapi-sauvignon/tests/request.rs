@@ -130,6 +130,14 @@ async fn test_all_species() {
                     .unwrap(),
                 "SENTIENT"
             );
+            assert_eq!(
+                _q("$.data.allSpecies[0].created", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-10T13:52:11.567Z"
+            );
             assert_eq!(_q("$.data.allSpecies[0].people.*", response).len(), 35);
             assert_eq!(
                 _q("$.data.allSpecies[0].people[0].name", response)
