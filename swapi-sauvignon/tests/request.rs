@@ -450,6 +450,9 @@ async fn test_all_films() {
                 episodeId
                 id
                 openingCrawl
+                planets {
+                  name
+                }
               }
             }
         "#,
@@ -521,6 +524,15 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap()[..5],
                 "It is"
+            );
+            assert_eq!(_q("$.data.allFilms[0].planets.*", response).len(), 3);
+            assert_eq!(
+                _q("$.data.allFilms[0].planets[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Tatooine"
             );
         },
     )

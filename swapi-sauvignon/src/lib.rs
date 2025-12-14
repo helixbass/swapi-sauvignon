@@ -55,6 +55,10 @@ pub fn get_schema() -> Schema {
                     episodeId => int_column()
                     id => id_column()
                     openingCrawl => string_column()
+                    planets => has_many(
+                        type => Planet
+                        through => film_planets
+                    )
                 ]
             }
             Species => {
