@@ -26,6 +26,7 @@ pub fn get_schema() -> Schema {
                         foreign_key => homeworld_id
                     )
                     rotationPeriod => optional_int_column()
+                    surfaceWater => optional_float_column()
                 ]
             }
             Film => {

@@ -34,6 +34,7 @@ async fn test_all_planets() {
                   name
                 }
                 rotationPeriod
+                surfaceWater
               }
             }
         "#,
@@ -171,6 +172,24 @@ async fn test_all_planets() {
             );
             assert_eq!(
                 _q("$.data.allPlanets[19].rotationPeriod", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[0].surfaceWater", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                1.0
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[8].surfaceWater", response)
                     .exactly_one()
                     .unwrap()
                     .as_null()
