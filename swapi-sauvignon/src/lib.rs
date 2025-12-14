@@ -146,6 +146,10 @@ pub fn get_schema() -> Schema {
                         through => person_hair_colors
                     )
                     height => optional_int_column()
+                    homeworld => belongs_to(
+                        type => Planet
+                    )
+                    id => id_column()
                 ]
             }
             Starship => {

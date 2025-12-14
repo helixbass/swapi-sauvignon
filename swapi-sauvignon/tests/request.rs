@@ -602,6 +602,10 @@ async fn test_all_people() {
                 gender
                 hairColors
                 height
+                homeworld {
+                  name
+                }
+                id
               }
             }
         "#,
@@ -717,6 +721,22 @@ async fn test_all_people() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(
+                _q("$.data.allPeople[0].homeworld.name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Tatooine"
+            );
+            assert_eq!(
+                _q("$.data.allPeople[0].id", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "1"
             );
         },
     )
