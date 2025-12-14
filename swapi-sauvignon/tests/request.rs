@@ -25,6 +25,7 @@ async fn test_all_planets() {
                 }
                 created
                 edited
+                diameter
               }
             }
         "#,
@@ -62,6 +63,24 @@ async fn test_all_planets() {
                     .as_str()
                     .unwrap(),
                 "2014-12-20T20:58:18.411Z"
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[0].diameter", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_u64()
+                    .unwrap(),
+                10465
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[37].diameter", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )

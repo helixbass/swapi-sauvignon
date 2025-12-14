@@ -16,6 +16,7 @@ pub fn get_schema() -> Schema {
                     )
                     created => timestamp_column()
                     edited => timestamp_column()
+                    diameter => optional_int_column()
                 ]
             }
             Film => {
