@@ -453,6 +453,10 @@ async fn test_all_films() {
                 planets {
                   name
                 }
+                # producers
+                species {
+                  name
+                }
               }
             }
         "#,
@@ -533,6 +537,24 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "Tatooine"
+            );
+            // assert_eq!(_q("$.data.allFilms[0].producers.*", response).len(), 2);
+            // assert_eq!(
+            //     _q("$.data.allFilms[0].producers[0]", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_str()
+            //         .unwrap(),
+            //     "GARY_KURTZ"
+            // );
+            assert_eq!(_q("$.data.allFilms[0].species.*", response).len(), 5);
+            assert_eq!(
+                _q("$.data.allFilms[0].species[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Human"
             );
         },
     )
