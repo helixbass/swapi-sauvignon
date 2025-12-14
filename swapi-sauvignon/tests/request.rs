@@ -434,6 +434,31 @@ async fn test_all_species() {
     .await;
 }
 
+#[tokio::test]
+async fn test_all_films() {
+    request_test(
+        r#"
+            {
+              allFilms {
+                title
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(_q("$.data.allFilms.*", response).len(), 6);
+            assert_eq!(
+                _q("$.data.allFilms[0].title", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "A New Hope"
+            );
+        },
+    )
+    .await;
+}
+
 fn _q<'a>(query: &str, response: &'a serde_json::Value) -> NodeList<'a> {
     let path = JsonPath::parse(query).unwrap();
     path.query(response)

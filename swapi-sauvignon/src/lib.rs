@@ -111,6 +111,12 @@ pub fn get_schema() -> Schema {
                     ids => id_column_list()
                 ]
             }
+            allFilms => {
+                type => [Film!]!
+                internal_dependencies => [
+                    ids => id_column_list()
+                ]
+            }
         ]
         enums => [
             SpeciesClassification,
