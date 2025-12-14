@@ -179,6 +179,7 @@ pub fn get_schema() -> Schema {
                         type => StarshipClass
                     )
                     mglt => optional_int_column()
+                    id => id_column()
                 ]
             }
             Vehicle => {

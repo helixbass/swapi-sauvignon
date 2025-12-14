@@ -827,6 +827,7 @@ async fn test_all_starships() {
                   name
                 }
                 mglt
+                id
               }
             }
         "#,
@@ -866,6 +867,14 @@ async fn test_all_starships() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].id", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2"
             );
         },
     )
