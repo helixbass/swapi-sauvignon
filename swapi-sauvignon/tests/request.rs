@@ -444,6 +444,8 @@ async fn test_all_films() {
                 characters {
                   name
                 }
+                created
+                edited
               }
             }
         "#,
@@ -465,6 +467,22 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "Luke Skywalker"
+            );
+            assert_eq!(
+                _q("$.data.allFilms[0].created", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-10T14:23:31.88Z"
+            );
+            assert_eq!(
+                _q("$.data.allFilms[0].edited", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-20T19:49:45.256Z"
             );
         },
     )

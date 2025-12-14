@@ -47,6 +47,8 @@ pub fn get_schema() -> Schema {
                         type => Person
                         through => film_characters
                     )
+                    created => timestamp_column()
+                    edited => timestamp_column()
                 ]
             }
             Species => {
