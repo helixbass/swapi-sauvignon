@@ -188,6 +188,7 @@ pub fn get_schema() -> Schema {
                     vehicleClass => enum_column(
                         type => VehicleClass
                     )
+                    id => id_column()
                 ]
             }
         ]

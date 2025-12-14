@@ -907,6 +907,7 @@ async fn test_all_vehicles() {
             {
               allVehicles {
                 vehicleClass
+                id
               }
             }
         "#,
@@ -919,6 +920,14 @@ async fn test_all_vehicles() {
                     .as_str()
                     .unwrap(),
                 "WHEELED"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].id", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "4"
             );
         },
     )
