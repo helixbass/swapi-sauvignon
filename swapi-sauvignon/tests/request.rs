@@ -170,6 +170,14 @@ async fn test_all_species() {
                     .unwrap(),
                 "Coruscant"
             );
+            assert_eq!(
+                _q("$.data.allSpecies[1].homeworld", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
         },
     )
     .await;
