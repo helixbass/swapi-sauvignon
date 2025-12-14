@@ -447,6 +447,7 @@ async fn test_all_films() {
                 created
                 edited
                 director
+                episodeId
               }
             }
         "#,
@@ -492,6 +493,16 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "GEORGE_LUCAS"
+            );
+            assert_eq!(
+                _q("$.data.allFilms[0].episodeId", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                4
             );
         },
     )
