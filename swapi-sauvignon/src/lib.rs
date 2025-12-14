@@ -25,6 +25,7 @@ pub fn get_schema() -> Schema {
                         type => Person
                         foreign_key => homeworld_id
                     )
+                    rotationPeriod => optional_int_column()
                 ]
             }
             Film => {

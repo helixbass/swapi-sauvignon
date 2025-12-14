@@ -33,6 +33,7 @@ async fn test_all_planets() {
                 residents {
                   name
                 }
+                rotationPeriod
               }
             }
         "#,
@@ -157,6 +158,24 @@ async fn test_all_planets() {
                     .as_str()
                     .unwrap(),
                 "Bib Fortuna"
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[0].rotationPeriod", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                23
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[19].rotationPeriod", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )
