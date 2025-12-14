@@ -71,6 +71,7 @@ async fn test_all_species() {
                 homeworld {
                   name
                 }
+                id
               }
             }
         "#,
@@ -177,6 +178,14 @@ async fn test_all_species() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(
+                _q("$.data.allSpecies[0].id", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "1"
             );
         },
     )
