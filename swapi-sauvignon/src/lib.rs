@@ -2,7 +2,7 @@ use sauvignon::{schema, Schema};
 
 use shared::{
     Climate, EyeColor, HairColor, Language, ProducerOrDirector, SkinColor, SpeciesClassification,
-    SpeciesDesignation, StarshipClass, Terrain,
+    SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
 };
 
 pub fn get_schema() -> Schema {
@@ -71,6 +71,10 @@ pub fn get_schema() -> Schema {
                         type => Starship
                         through => film_starships
                     )
+                    vehicles => has_many(
+                        type => Vehicle
+                        through => film_vehicles
+                    )
                 ]
             }
             Species => {
@@ -132,6 +136,13 @@ pub fn get_schema() -> Schema {
                     )
                 ]
             }
+            Vehicle => {
+                fields => [
+                    vehicleClass => enum_column(
+                        type => VehicleClass
+                    )
+                ]
+            }
         ]
         query => [
             allPlanets => {
@@ -164,6 +175,7 @@ pub fn get_schema() -> Schema {
             SkinColor,
             ProducerOrDirector,
             StarshipClass,
+            VehicleClass,
         ]
     }
 }

@@ -460,6 +460,9 @@ async fn test_all_films() {
                 starships {
                   starshipClass
                 }
+                vehicles {
+                  vehicleClass
+                }
               }
             }
         "#,
@@ -567,6 +570,15 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "CORVETTE"
+            );
+            assert_eq!(_q("$.data.allFilms[0].vehicles.*", response).len(), 4);
+            assert_eq!(
+                _q("$.data.allFilms[0].vehicles[0].vehicleClass", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "WHEELED"
             );
         },
     )

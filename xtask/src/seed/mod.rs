@@ -13,7 +13,7 @@ use serde::{
 };
 use shared::{
     get_db_pool, Climate, EyeColor, HairColor, Language, ProducerOrDirector, SkinColor,
-    SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain,
+    SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
 };
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
@@ -1065,47 +1065,6 @@ impl From<VehicleNested> for Vehicle {
             vehicle_class: value.fields.vehicle_class,
         }
     }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-enum VehicleClass {
-    #[serde(alias = "wheeled")]
-    Wheeled,
-    #[serde(alias = "repulsorcraft")]
-    Repulsorcraft,
-    #[serde(alias = "starfighter")]
-    Starfighter,
-    #[serde(alias = "airspeeder")]
-    #[serde(alias = "air speeder")]
-    Airspeeder,
-    #[serde(alias = "space/planetary bomber")]
-    SpacePlanetaryBomber,
-    #[serde(alias = "assault walker")]
-    AssaultWalker,
-    #[serde(alias = "walker")]
-    Walker,
-    #[serde(alias = "sail barge")]
-    SailBarge,
-    #[serde(alias = "repulsorcraft cargo skiff")]
-    RepulsorcraftCargoSkiff,
-    #[serde(alias = "speeder")]
-    Speeder,
-    #[serde(alias = "landing craft")]
-    LandingCraft,
-    #[serde(alias = "submarine")]
-    Submarine,
-    #[serde(alias = "gunship")]
-    Gunship,
-    #[serde(alias = "transport")]
-    Transport,
-    #[serde(alias = "wheeled walker")]
-    WheeledWalker,
-    #[serde(alias = "fire suppression ship")]
-    FireSuppressionShip,
-    #[serde(alias = "droid starfighter")]
-    DroidStarfighter,
-    #[serde(alias = "droid tank")]
-    DroidTank,
 }
 
 async fn seed_films(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
