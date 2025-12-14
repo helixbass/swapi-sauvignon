@@ -18,6 +18,7 @@ pub fn get_schema() -> Schema {
                     edited => timestamp_column()
                     diameter => optional_int_column()
                     gravity => optional_string_column()
+                    id => id_column()
                 ]
             }
             Film => {

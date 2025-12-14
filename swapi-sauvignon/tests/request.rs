@@ -27,6 +27,7 @@ async fn test_all_planets() {
                 edited
                 diameter
                 gravity
+                id
               }
             }
         "#,
@@ -98,6 +99,14 @@ async fn test_all_planets() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[0].id", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "1"
             );
         },
     )
