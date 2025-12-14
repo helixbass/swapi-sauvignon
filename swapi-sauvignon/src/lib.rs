@@ -40,6 +40,12 @@ pub fn get_schema() -> Schema {
                         type => Person
                         foreign_key => species_id
                     )
+                    films => has_many(
+                        // TODO: update when `type` has a default
+                        // to remove `type` here
+                        type => Film
+                        through => film_species
+                    )
                 ]
             }
             Person => {

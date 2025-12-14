@@ -65,6 +65,9 @@ async fn test_all_species() {
                 people {
                   name
                 }
+                films {
+                  title
+                }
               }
             }
         "#,
@@ -146,6 +149,15 @@ async fn test_all_species() {
                     .as_str()
                     .unwrap(),
                 "Luke Skywalker"
+            );
+            assert_eq!(_q("$.data.allSpecies[4].films.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allSpecies[4].films[0].title", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "A New Hope"
             );
         },
     )
