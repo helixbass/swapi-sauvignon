@@ -1,6 +1,6 @@
 use sauvignon::{schema, Schema};
 
-use shared::{Climate, Language, SpeciesClassification, SpeciesDesignation};
+use shared::{Climate, Language, SpeciesClassification, SpeciesDesignation, Terrain};
 
 pub fn get_schema() -> Schema {
     schema! {
@@ -30,6 +30,10 @@ pub fn get_schema() -> Schema {
                     climates => has_many(
                         type => Climate
                         through => planet_climates
+                    )
+                    terrains => has_many(
+                        type => Terrain
+                        through => planet_terrains
                     )
                 ]
             }
@@ -98,6 +102,7 @@ pub fn get_schema() -> Schema {
             SpeciesDesignation,
             Language,
             Climate,
+            Terrain,
         ]
     }
 }

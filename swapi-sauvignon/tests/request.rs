@@ -36,6 +36,7 @@ async fn test_all_planets() {
                 rotationPeriod
                 surfaceWater
                 climates
+                terrains
               }
             }
         "#,
@@ -216,6 +217,25 @@ async fn test_all_planets() {
                 "TEMPERATE"
             );
             assert_eq!(_q("$.data.allPlanets[27].climates.*", response).len(), 0);
+            assert_eq!(_q("$.data.allPlanets[0].terrains.*", response).len(), 1);
+            assert_eq!(
+                _q("$.data.allPlanets[0].terrains[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "DESERT"
+            );
+            assert_eq!(_q("$.data.allPlanets[1].terrains.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allPlanets[1].terrains[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "GRASSLANDS"
+            );
+            assert_eq!(_q("$.data.allPlanets[27].terrains.*", response).len(), 0);
         },
     )
     .await;
