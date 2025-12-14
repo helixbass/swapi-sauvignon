@@ -29,6 +29,7 @@ async fn test_all_planets() {
                 gravity
                 id
                 orbitalPeriod
+                population
               }
             }
         "#,
@@ -121,6 +122,24 @@ async fn test_all_planets() {
             );
             assert_eq!(
                 _q("$.data.allPlanets[19].orbitalPeriod", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[0].population", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                200000.0
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[3].population", response)
                     .exactly_one()
                     .unwrap()
                     .as_null()

@@ -20,6 +20,7 @@ pub fn get_schema() -> Schema {
                     gravity => optional_string_column()
                     id => id_column()
                     orbitalPeriod => optional_int_column()
+                    population => optional_float_column()
                 ]
             }
             Film => {
