@@ -155,6 +155,10 @@ pub fn get_schema() -> Schema {
                         type => SkinColor
                         through => person_skin_colors
                     )
+                    species => belongs_to(
+                        type => Species
+                        optional => true
+                    )
                 ]
             }
             Starship => {

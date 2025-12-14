@@ -608,6 +608,9 @@ async fn test_all_people() {
                 id
                 mass
                 skinColors
+                species {
+                  name
+                }
               }
             }
         "#,
@@ -775,6 +778,14 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "WHITE"
+            );
+            assert_eq!(
+                _q("$.data.allPeople[0].species.name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Human"
             );
         },
     )
