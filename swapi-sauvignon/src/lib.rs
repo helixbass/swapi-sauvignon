@@ -50,6 +50,7 @@ pub fn get_schema() -> Schema {
                         optional => true
                         type => Planet
                     )
+                    id => id_column()
                 ]
             }
             Person => {
