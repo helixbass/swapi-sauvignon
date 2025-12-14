@@ -53,6 +53,7 @@ pub fn get_schema() -> Schema {
                         type => ProducerOrDirector
                     )
                     episodeId => int_column()
+                    id => id_column()
                 ]
             }
             Species => {

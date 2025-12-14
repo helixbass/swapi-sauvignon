@@ -448,6 +448,7 @@ async fn test_all_films() {
                 edited
                 director
                 episodeId
+                id
               }
             }
         "#,
@@ -503,6 +504,14 @@ async fn test_all_films() {
                     .as_i64()
                     .unwrap(),
                 4
+            );
+            assert_eq!(
+                _q("$.data.allFilms[0].id", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "1"
             );
         },
     )
