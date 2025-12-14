@@ -457,6 +457,9 @@ async fn test_all_films() {
                 species {
                   name
                 }
+                starships {
+                  starshipClass
+                }
               }
             }
         "#,
@@ -555,6 +558,15 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "Human"
+            );
+            assert_eq!(_q("$.data.allFilms[0].starships.*", response).len(), 8);
+            assert_eq!(
+                _q("$.data.allFilms[0].starships[0].starshipClass", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "CORVETTE"
             );
         },
     )

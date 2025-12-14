@@ -13,7 +13,7 @@ use serde::{
 };
 use shared::{
     get_db_pool, Climate, EyeColor, HairColor, Language, ProducerOrDirector, SkinColor,
-    SpeciesClassification, SpeciesDesignation, Terrain,
+    SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain,
 };
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
@@ -1025,58 +1025,6 @@ impl From<StarshipNested> for Starship {
             hyperdrive_rating: value.fields.hyperdrive_rating,
         }
     }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-enum StarshipClass {
-    #[serde(alias = "corvette")]
-    Corvette,
-    #[serde(alias = "Star Destroyer")]
-    #[serde(alias = "star destroyer")]
-    StarDestroyer,
-    #[serde(alias = "landing craft")]
-    LandingCraft,
-    #[serde(alias = "Deep Space Mobile Battlestation")]
-    DeepSpaceMobileBattlestation,
-    #[serde(alias = "Light freighter")]
-    LightFreighter,
-    #[serde(alias = "assault starfighter")]
-    #[serde(alias = "Assault Starfighter")]
-    AssaultStarfighter,
-    #[serde(alias = "starfighter")]
-    Starfighter,
-    #[serde(alias = "Star dreadnought")]
-    StarDreadnought,
-    #[serde(alias = "Medium transport")]
-    MediumTransport,
-    #[serde(alias = "Patrol craft")]
-    PatrolCraft,
-    #[serde(alias = "Armed government transport")]
-    ArmedGovernmentTransport,
-    #[serde(alias = "Escort ship")]
-    EscortShip,
-    #[serde(alias = "Star Cruiser")]
-    StarCruiser,
-    #[serde(alias = "Space cruiser")]
-    SpaceCruiser,
-    #[serde(alias = "Droid control ship")]
-    DroidControlShip,
-    #[serde(alias = "yacht")]
-    Yacht,
-    #[serde(alias = "Space Transport")]
-    SpaceTransport,
-    #[serde(alias = "Diplomatic barge")]
-    DiplomaticBarge,
-    #[serde(alias = "freighter")]
-    Freighter,
-    #[serde(alias = "assault ship")]
-    AssaultShip,
-    #[serde(alias = "capital ship")]
-    CapitalShip,
-    #[serde(alias = "transport")]
-    Transport,
-    #[serde(alias = "cruiser")]
-    Cruiser,
 }
 
 #[derive(Debug)]
