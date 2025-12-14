@@ -189,6 +189,10 @@ pub fn get_schema() -> Schema {
                         type => VehicleClass
                     )
                     id => id_column()
+                    pilots => has_many(
+                        type => Person
+                        through => vehicle_pilots
+                    )
                 ]
             }
         ]

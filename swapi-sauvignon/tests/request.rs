@@ -908,6 +908,9 @@ async fn test_all_vehicles() {
               allVehicles {
                 vehicleClass
                 id
+                pilots {
+                  name
+                }
               }
             }
         "#,
@@ -928,6 +931,15 @@ async fn test_all_vehicles() {
                     .as_str()
                     .unwrap(),
                 "4"
+            );
+            assert_eq!(_q("$.data.allVehicles[4].pilots.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allVehicles[4].pilots[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Luke Skywalker"
             );
         },
     )
