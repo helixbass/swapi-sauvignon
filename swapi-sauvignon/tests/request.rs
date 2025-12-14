@@ -614,6 +614,9 @@ async fn test_all_people() {
                 starships {
                   starshipClass
                 }
+                vehicles {
+                  vehicleClass
+                }
               }
             }
         "#,
@@ -798,6 +801,15 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "LIGHT_FREIGHTER"
+            );
+            assert_eq!(_q("$.data.allPeople[0].vehicles.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allPeople[0].vehicles[0].vehicleClass", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "AIRSPEEDER"
             );
         },
     )

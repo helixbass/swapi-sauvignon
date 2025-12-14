@@ -163,6 +163,10 @@ pub fn get_schema() -> Schema {
                         type => Starship
                         through => starship_pilots
                     )
+                    vehicles => has_many(
+                        type => Vehicle
+                        through => vehicle_pilots
+                    )
                 ]
             }
             Starship => {
