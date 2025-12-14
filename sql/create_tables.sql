@@ -176,6 +176,42 @@ CREATE TYPE haircolor AS ENUM (
   'White'
 );
 
+CREATE TYPE language AS ENUM (
+  'GalacticBasic',
+  'Shyriiwook',
+  'Huttese',
+  'Dosh',
+  'MonCalamarian',
+  'Ewokese',
+  'Sullutese',
+  'Neimoidia',
+  'GunganBasic',
+  'Toydarian',
+  'Dugese',
+  'TwiLeki',
+  'Aleena',
+  'Vulpterish',
+  'Xextese',
+  'Tundan',
+  'Cerean',
+  'Nautila',
+  'Zabraki',
+  'Iktotchese',
+  'Quermian',
+  'KelDor',
+  'Chagria',
+  'Geonosian',
+  'Mirialan',
+  'Clawdite',
+  'Besalisk',
+  'Kaminoan',
+  'Skakoan',
+  'Muun',
+  'Togruti',
+  'Kaleesh',
+  'Utapese'
+);
+
 CREATE TABLE species (
   id INTEGER PRIMARY KEY NOT NULL,
   edited TIMESTAMPTZ NOT NULL,
@@ -183,7 +219,7 @@ CREATE TABLE species (
   name TEXT NOT NULL,
   classification speciesclassification,
   designation speciesdesignation NOT NULL,
-  language TEXT,
+  language language,
   homeworld_id integer REFERENCES planets (id),
   average_lifespan INTEGER,
   average_height FLOAT
