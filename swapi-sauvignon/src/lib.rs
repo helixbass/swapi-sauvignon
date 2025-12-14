@@ -171,6 +171,10 @@ pub fn get_schema() -> Schema {
             }
             Starship => {
                 fields => [
+                    pilots => has_many(
+                        type => Person
+                        through => starship_pilots
+                    )
                     starshipClass => enum_column(
                         type => StarshipClass
                     )
@@ -205,6 +209,12 @@ pub fn get_schema() -> Schema {
             }
             allPeople => {
                 type => [Person!]!
+                internal_dependencies => [
+                    ids => id_column_list()
+                ]
+            }
+            allStarships => {
+                type => [Starship!]!
                 internal_dependencies => [
                     ids => id_column_list()
                 ]

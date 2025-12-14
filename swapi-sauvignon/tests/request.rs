@@ -816,6 +816,43 @@ async fn test_all_people() {
     .await;
 }
 
+#[tokio::test]
+async fn test_all_starships() {
+    request_test(
+        r#"
+            {
+              allStarships {
+                starshipClass
+                pilots {
+                  name
+                }
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(_q("$.data.allStarships.*", response).len(), 36);
+            assert_eq!(
+                _q("$.data.allStarships[0].starshipClass", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "CORVETTE"
+            );
+            assert_eq!(_q("$.data.allStarships[4].pilots.*", response).len(), 4);
+            assert_eq!(
+                _q("$.data.allStarships[4].pilots[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Chewbacca"
+            );
+        },
+    )
+    .await;
+}
+
 fn _q<'a>(query: &str, response: &'a serde_json::Value) -> NodeList<'a> {
     let path = JsonPath::parse(query).unwrap();
     path.query(response)
