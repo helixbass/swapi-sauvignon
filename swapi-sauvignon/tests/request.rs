@@ -601,6 +601,7 @@ async fn test_all_people() {
                 }
                 gender
                 hairColors
+                height
               }
             }
         "#,
@@ -698,6 +699,24 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "BROWN"
+            );
+            assert_eq!(
+                _q("$.data.allPeople[0].height", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                172
+            );
+            assert_eq!(
+                _q("$.data.allPeople[27].height", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )

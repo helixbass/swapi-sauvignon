@@ -145,6 +145,7 @@ pub fn get_schema() -> Schema {
                         type => HairColor
                         through => person_hair_colors
                     )
+                    height => optional_int_column()
                 ]
             }
             Starship => {
