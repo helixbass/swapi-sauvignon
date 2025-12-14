@@ -441,6 +441,9 @@ async fn test_all_films() {
             {
               allFilms {
                 title
+                characters {
+                  name
+                }
               }
             }
         "#,
@@ -453,6 +456,15 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "A New Hope"
+            );
+            assert_eq!(_q("$.data.allFilms[0].characters.*", response).len(), 18);
+            assert_eq!(
+                _q("$.data.allFilms[0].characters[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Luke Skywalker"
             );
         },
     )

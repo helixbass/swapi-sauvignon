@@ -43,6 +43,10 @@ pub fn get_schema() -> Schema {
             Film => {
                 fields => [
                     title => string_column()
+                    characters => has_many(
+                        type => Person
+                        through => film_characters
+                    )
                 ]
             }
             Species => {
