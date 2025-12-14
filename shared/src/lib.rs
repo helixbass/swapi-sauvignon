@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use serde::Deserialize;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres, Type};
-use strum::VariantNames;
+use strum::{Display, VariantNames};
 
 pub async fn get_db_pool() -> anyhow::Result<Pool<Postgres>> {
     let db_pool = PgPoolOptions::new()
@@ -13,7 +13,7 @@ pub async fn get_db_pool() -> anyhow::Result<Pool<Postgres>> {
     Ok(db_pool)
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Type, VariantNames)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Type, VariantNames, Display)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 #[serde(rename_all = "snake_case")]
 pub enum SpeciesClassification {
