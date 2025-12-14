@@ -26,6 +26,7 @@ async fn test_all_planets() {
                 created
                 edited
                 diameter
+                gravity
               }
             }
         "#,
@@ -76,6 +77,22 @@ async fn test_all_planets() {
             );
             assert_eq!(
                 _q("$.data.allPlanets[37].diameter", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[0].gravity", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "1 standard"
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[18].gravity", response)
                     .exactly_one()
                     .unwrap()
                     .as_null()
