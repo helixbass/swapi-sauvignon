@@ -1,6 +1,6 @@
 use sauvignon::{schema, Schema};
 
-use shared::{Language, SpeciesClassification, SpeciesDesignation};
+use shared::{Climate, Language, SpeciesClassification, SpeciesDesignation};
 
 pub fn get_schema() -> Schema {
     schema! {
@@ -27,6 +27,10 @@ pub fn get_schema() -> Schema {
                     )
                     rotationPeriod => optional_int_column()
                     surfaceWater => optional_float_column()
+                    climates => has_many(
+                        type => Climate
+                        through => planet_climates
+                    )
                 ]
             }
             Film => {
@@ -93,6 +97,7 @@ pub fn get_schema() -> Schema {
             SpeciesClassification,
             SpeciesDesignation,
             Language,
+            Climate,
         ]
     }
 }

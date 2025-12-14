@@ -146,3 +146,51 @@ impl FromStr for Language {
         }
     }
 }
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Type, VariantNames, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "snake_case")]
+pub enum Climate {
+    Arid,
+    Temperate,
+    Tropical,
+    Frozen,
+    Murky,
+    Windy,
+    Hot,
+    ArtificialTemperate,
+    Frigid,
+    Humid,
+    Moist,
+    Polluted,
+    Superheated,
+    Subarctic,
+    Arctic,
+    Rocky,
+}
+
+impl FromStr for Climate {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "arid" => Ok(Self::Arid),
+            "temperate" => Ok(Self::Temperate),
+            "tropical" => Ok(Self::Tropical),
+            "frozen" => Ok(Self::Frozen),
+            "murky" => Ok(Self::Murky),
+            "windy" => Ok(Self::Windy),
+            "hot" => Ok(Self::Hot),
+            "artificial temperate" => Ok(Self::ArtificialTemperate),
+            "frigid" => Ok(Self::Frigid),
+            "humid" => Ok(Self::Humid),
+            "moist" => Ok(Self::Moist),
+            "polluted" => Ok(Self::Polluted),
+            "superheated" => Ok(Self::Superheated),
+            "subartic" => Ok(Self::Subarctic),
+            "artic" => Ok(Self::Arctic),
+            "rocky" => Ok(Self::Rocky),
+            _ => Err("Unknown climate"),
+        }
+    }
+}

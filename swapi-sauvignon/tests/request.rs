@@ -35,6 +35,7 @@ async fn test_all_planets() {
                 }
                 rotationPeriod
                 surfaceWater
+                climates
               }
             }
         "#,
