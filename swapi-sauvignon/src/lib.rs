@@ -1,8 +1,8 @@
 use sauvignon::{schema, Schema};
 
 use shared::{
-    Climate, EyeColor, HairColor, Language, SkinColor, SpeciesClassification, SpeciesDesignation,
-    Terrain,
+    Climate, EyeColor, HairColor, Language, ProducerOrDirector, SkinColor, SpeciesClassification,
+    SpeciesDesignation, Terrain,
 };
 
 pub fn get_schema() -> Schema {
@@ -49,6 +49,9 @@ pub fn get_schema() -> Schema {
                     )
                     created => timestamp_column()
                     edited => timestamp_column()
+                    director => enum_column(
+                        type => ProducerOrDirector
+                    )
                 ]
             }
             Species => {
@@ -133,6 +136,7 @@ pub fn get_schema() -> Schema {
             EyeColor,
             HairColor,
             SkinColor,
+            ProducerOrDirector,
         ]
     }
 }

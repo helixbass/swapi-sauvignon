@@ -446,6 +446,7 @@ async fn test_all_films() {
                 }
                 created
                 edited
+                director
               }
             }
         "#,
@@ -483,6 +484,14 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "2014-12-20T19:49:45.256Z"
+            );
+            assert_eq!(
+                _q("$.data.allFilms[0].director", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "GEORGE_LUCAS"
             );
         },
     )

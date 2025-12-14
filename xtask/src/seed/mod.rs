@@ -12,8 +12,8 @@ use serde::{
     Deserialize,
 };
 use shared::{
-    get_db_pool, Climate, EyeColor, HairColor, Language, SkinColor, SpeciesClassification,
-    SpeciesDesignation, Terrain,
+    get_db_pool, Climate, EyeColor, HairColor, Language, ProducerOrDirector, SkinColor,
+    SpeciesClassification, SpeciesDesignation, Terrain,
 };
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
@@ -1346,38 +1346,6 @@ impl From<FilmNested> for Film {
             opening_crawl: value.fields.opening_crawl,
             characters: value.fields.characters,
             species: value.fields.species,
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-enum ProducerOrDirector {
-    #[serde(alias = "Gary Kurtz")]
-    GaryKurtz,
-    #[serde(alias = "Rick McCallum")]
-    RickMcCallum,
-    #[serde(alias = "George Lucas")]
-    GeorgeLucas,
-    #[serde(alias = "Irvin Kershner")]
-    IrvinKershner,
-    #[serde(alias = "Howard G. Kazanjian")]
-    HowardGKazanjian,
-    #[serde(alias = "Richard Marquand")]
-    RichardMarquand,
-}
-
-impl FromStr for ProducerOrDirector {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "Gary Kurtz" => Ok(Self::GaryKurtz),
-            "Rick McCallum" => Ok(Self::RickMcCallum),
-            "George Lucas" => Ok(Self::GeorgeLucas),
-            "Irvin Kershner" => Ok(Self::IrvinKershner),
-            "Howard G. Kazanjian" => Ok(Self::HowardGKazanjian),
-            "Richard Marquand" => Ok(Self::RichardMarquand),
-            _ => Err("Unknown producer or director"),
         }
     }
 }
