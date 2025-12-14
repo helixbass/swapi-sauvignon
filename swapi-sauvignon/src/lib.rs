@@ -150,6 +150,7 @@ pub fn get_schema() -> Schema {
                         type => Planet
                     )
                     id => id_column()
+                    mass => optional_float_column()
                 ]
             }
             Starship => {

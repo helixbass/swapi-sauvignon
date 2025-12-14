@@ -606,6 +606,7 @@ async fn test_all_people() {
                   name
                 }
                 id
+                mass
               }
             }
         "#,
@@ -737,6 +738,24 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "1"
+            );
+            assert_eq!(
+                _q("$.data.allPeople[0].mass", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                77.0
+            );
+            assert_eq!(
+                _q("$.data.allPeople[11].mass", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )
