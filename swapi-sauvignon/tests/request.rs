@@ -267,6 +267,7 @@ async fn test_all_species() {
                 edited
                 eyeColors
                 hairColors
+                skinColors
               }
             }
         "#,
@@ -418,6 +419,16 @@ async fn test_all_species() {
                 "BLONDE"
             );
             assert_eq!(_q("$.data.allSpecies[1].hairColors.*", response).len(), 0);
+            assert_eq!(_q("$.data.allSpecies[0].skinColors.*", response).len(), 4);
+            assert_eq!(
+                _q("$.data.allSpecies[0].skinColors[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "CAUCASIAN"
+            );
+            assert_eq!(_q("$.data.allSpecies[1].skinColors.*", response).len(), 0);
         },
     )
     .await;

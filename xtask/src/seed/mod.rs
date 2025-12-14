@@ -12,8 +12,8 @@ use serde::{
     Deserialize,
 };
 use shared::{
-    get_db_pool, Climate, EyeColor, HairColor, Language, SpeciesClassification, SpeciesDesignation,
-    Terrain,
+    get_db_pool, Climate, EyeColor, HairColor, Language, SkinColor, SpeciesClassification,
+    SpeciesDesignation, Terrain,
 };
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
@@ -603,77 +603,6 @@ impl FromStr for Gender {
             "female" => Ok(Self::Female),
             "hermaphrodite" => Ok(Self::Hermaphrodite),
             _ => Err("Unknown gender"),
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-// #[serde(rename_all = "kebab-case")]
-enum SkinColor {
-    Caucasian,
-    Black,
-    Asian,
-    Hispanic,
-    Grey,
-    Fair,
-    Gold,
-    White,
-    Blue,
-    Light,
-    Red,
-    Green,
-    GreenTan,
-    Brown,
-    Pale,
-    Metal,
-    Dark,
-    BrownMottle,
-    MottledGreen,
-    Orange,
-    Yellow,
-    Tan,
-    Silver,
-    Magenta,
-    Purple,
-    Pink,
-    PalePink,
-    Peach,
-}
-
-impl FromStr for SkinColor {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "caucasian" => Ok(Self::Caucasian),
-            "black" => Ok(Self::Black),
-            "asian" => Ok(Self::Asian),
-            "hispanic" => Ok(Self::Hispanic),
-            "gray" | "grey" => Ok(Self::Grey),
-            "fair" => Ok(Self::Fair),
-            "gold" => Ok(Self::Gold),
-            "white" => Ok(Self::White),
-            "blue" => Ok(Self::Blue),
-            "light" => Ok(Self::Light),
-            "red" => Ok(Self::Red),
-            "green" => Ok(Self::Green),
-            "green-tan" => Ok(Self::GreenTan),
-            "brown" => Ok(Self::Brown),
-            "pale" => Ok(Self::Pale),
-            "metal" => Ok(Self::Metal),
-            "dark" => Ok(Self::Dark),
-            "brown mottle" => Ok(Self::BrownMottle),
-            "mottled green" => Ok(Self::MottledGreen),
-            "orange" => Ok(Self::Orange),
-            "yellow" => Ok(Self::Yellow),
-            "tan" => Ok(Self::Tan),
-            "silver" => Ok(Self::Silver),
-            "magenta" => Ok(Self::Magenta),
-            "purple" => Ok(Self::Purple),
-            "pink" => Ok(Self::Pink),
-            "pale pink" => Ok(Self::PalePink),
-            "peach" => Ok(Self::Peach),
-            _ => Err("Unknown skin color"),
         }
     }
 }
