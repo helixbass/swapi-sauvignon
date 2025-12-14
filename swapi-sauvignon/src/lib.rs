@@ -163,6 +163,12 @@ pub fn get_schema() -> Schema {
                     ids => id_column_list()
                 ]
             }
+            allPeople => {
+                type => [Person!]!
+                internal_dependencies => [
+                    ids => id_column_list()
+                ]
+            }
         ]
         enums => [
             SpeciesClassification,

@@ -585,6 +585,31 @@ async fn test_all_films() {
     .await;
 }
 
+#[tokio::test]
+async fn test_all_people() {
+    request_test(
+        r#"
+            {
+              allPeople {
+                name
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(_q("$.data.allPeople.*", response).len(), 82);
+            assert_eq!(
+                _q("$.data.allPeople[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Luke Skywalker"
+            );
+        },
+    )
+    .await;
+}
+
 fn _q<'a>(query: &str, response: &'a serde_json::Value) -> NodeList<'a> {
     let path = JsonPath::parse(query).unwrap();
     path.query(response)
