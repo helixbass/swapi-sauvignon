@@ -28,6 +28,7 @@ async fn test_all_planets() {
                 diameter
                 gravity
                 id
+                orbitalPeriod
               }
             }
         "#,
@@ -107,6 +108,24 @@ async fn test_all_planets() {
                     .as_str()
                     .unwrap(),
                 "1"
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[0].orbitalPeriod", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_u64()
+                    .unwrap(),
+                304
+            );
+            assert_eq!(
+                _q("$.data.allPlanets[19].orbitalPeriod", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )

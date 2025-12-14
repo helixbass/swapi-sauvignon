@@ -19,6 +19,7 @@ pub fn get_schema() -> Schema {
                     diameter => optional_int_column()
                     gravity => optional_string_column()
                     id => id_column()
+                    orbitalPeriod => optional_int_column()
                 ]
             }
             Film => {
