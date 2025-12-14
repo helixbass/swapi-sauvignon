@@ -72,6 +72,7 @@ async fn test_all_species() {
                   name
                 }
                 id
+                language
               }
             }
         "#,
@@ -186,6 +187,22 @@ async fn test_all_species() {
                     .as_str()
                     .unwrap(),
                 "1"
+            );
+            assert_eq!(
+                _q("$.data.allSpecies[0].language", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "GALACTIC_BASIC"
+            );
+            assert_eq!(
+                _q("$.data.allSpecies[22].language", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )

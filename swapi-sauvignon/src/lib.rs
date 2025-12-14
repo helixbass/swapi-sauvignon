@@ -1,6 +1,6 @@
 use sauvignon::{schema, Schema};
 
-use shared::{SpeciesClassification, SpeciesDesignation};
+use shared::{Language, SpeciesClassification, SpeciesDesignation};
 
 pub fn get_schema() -> Schema {
     schema! {
@@ -51,6 +51,9 @@ pub fn get_schema() -> Schema {
                         type => Planet
                     )
                     id => id_column()
+                    language => optional_enum_column(
+                        type => Language
+                    )
                 ]
             }
             Person => {
@@ -76,6 +79,7 @@ pub fn get_schema() -> Schema {
         enums => [
             SpeciesClassification,
             SpeciesDesignation,
+            Language,
         ]
     }
 }
