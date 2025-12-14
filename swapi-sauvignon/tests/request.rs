@@ -600,6 +600,7 @@ async fn test_all_people() {
                   title
                 }
                 gender
+                hairColors
               }
             }
         "#,
@@ -679,6 +680,24 @@ async fn test_all_people() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(_q("$.data.allPeople[0].hairColors.*", response).len(), 1);
+            assert_eq!(
+                _q("$.data.allPeople[0].hairColors[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "BLONDE"
+            );
+            assert_eq!(_q("$.data.allPeople[5].hairColors.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allPeople[5].hairColors[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "BROWN"
             );
         },
     )

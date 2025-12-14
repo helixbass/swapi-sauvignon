@@ -141,6 +141,10 @@ pub fn get_schema() -> Schema {
                     gender => optional_enum_column(
                         type => Gender
                     )
+                    hairColors => has_many(
+                        type => HairColor
+                        through => person_hair_colors
+                    )
                 ]
             }
             Starship => {
