@@ -12,7 +12,8 @@ use serde::{
     Deserialize,
 };
 use shared::{
-    get_db_pool, Climate, EyeColor, Language, SpeciesClassification, SpeciesDesignation, Terrain,
+    get_db_pool, Climate, EyeColor, HairColor, Language, SpeciesClassification, SpeciesDesignation,
+    Terrain,
 };
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
@@ -673,36 +674,6 @@ impl FromStr for SkinColor {
             "pale pink" => Ok(Self::PalePink),
             "peach" => Ok(Self::Peach),
             _ => Err("Unknown skin color"),
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-#[serde(rename_all = "snake_case")]
-enum HairColor {
-    #[serde(alias = "blond")]
-    Blonde,
-    Brown,
-    Black,
-    Red,
-    Grey,
-    Auburn,
-    White,
-}
-
-impl FromStr for HairColor {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "blonde" | "blond" => Ok(Self::Blonde),
-            "brown" => Ok(Self::Brown),
-            "black" => Ok(Self::Black),
-            "red" => Ok(Self::Red),
-            "grey" => Ok(Self::Grey),
-            "auburn" => Ok(Self::Auburn),
-            "white" => Ok(Self::White),
-            _ => Err("Unknown hair color"),
         }
     }
 }

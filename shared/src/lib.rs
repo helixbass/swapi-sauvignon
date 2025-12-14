@@ -366,3 +366,34 @@ impl FromStr for EyeColor {
         }
     }
 }
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Type, VariantNames, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "snake_case")]
+pub enum HairColor {
+    #[serde(alias = "blond")]
+    Blonde,
+    Brown,
+    Black,
+    Red,
+    Grey,
+    Auburn,
+    White,
+}
+
+impl FromStr for HairColor {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "blonde" | "blond" => Ok(Self::Blonde),
+            "brown" => Ok(Self::Brown),
+            "black" => Ok(Self::Black),
+            "red" => Ok(Self::Red),
+            "grey" => Ok(Self::Grey),
+            "auburn" => Ok(Self::Auburn),
+            "white" => Ok(Self::White),
+            _ => Err("Unknown hair color"),
+        }
+    }
+}
