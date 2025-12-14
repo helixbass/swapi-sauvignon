@@ -107,6 +107,14 @@ async fn test_all_species() {
                 "MAMMAL"
             );
             assert_eq!(
+                _q("$.data.allSpecies[10].classification", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            assert_eq!(
                 _q("$.data.allSpecies[0].created", response)
                     .exactly_one()
                     .unwrap()
