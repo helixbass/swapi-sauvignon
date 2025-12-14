@@ -134,6 +134,10 @@ pub fn get_schema() -> Schema {
                         type => EyeColor
                         through => person_eye_colors
                     )
+                    films => has_many(
+                        type => Film
+                        through => film_characters
+                    )
                 ]
             }
             Starship => {

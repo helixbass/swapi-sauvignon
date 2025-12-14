@@ -596,6 +596,9 @@ async fn test_all_people() {
                 created
                 edited
                 eyeColors
+                films {
+                  title
+                }
               }
             }
         "#,
@@ -650,6 +653,15 @@ async fn test_all_people() {
                     .as_str()
                     .unwrap(),
                 "RED"
+            );
+            assert_eq!(_q("$.data.allPeople[0].films.*", response).len(), 4);
+            assert_eq!(
+                _q("$.data.allPeople[0].films[0].title", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "A New Hope"
             );
         },
     )
