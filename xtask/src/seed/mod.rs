@@ -410,7 +410,7 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
 
     let species: Vec<Species> = species.into_iter().map(Into::into).collect();
 
-    let mut query_builder = QueryBuilder::new("INSERT INTO species (id, edited, created, name, classification, designation, language, homeworld, average_lifespan, average_height)");
+    let mut query_builder = QueryBuilder::new("INSERT INTO species (id, edited, created, name, classification, designation, language, homeworld_id, average_lifespan, average_height)");
     query_builder.push_values(&species, |mut builder, species| {
         builder
             .push_bind(i32::try_from(species.id).unwrap())

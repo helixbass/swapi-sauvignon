@@ -184,7 +184,7 @@ CREATE TABLE species (
   classification speciesclassification,
   designation speciesdesignation NOT NULL,
   language TEXT,
-  homeworld integer REFERENCES planets (id),
+  homeworld_id integer REFERENCES planets (id),
   average_lifespan INTEGER,
   average_height FLOAT
 );

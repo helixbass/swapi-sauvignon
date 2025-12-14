@@ -46,6 +46,10 @@ pub fn get_schema() -> Schema {
                         type => Film
                         through => film_species
                     )
+                    homeworld => belongs_to(
+                        optional => true
+                        type => Planet
+                    )
                 ]
             }
             Person => {

@@ -68,6 +68,9 @@ async fn test_all_species() {
                 films {
                   title
                 }
+                homeworld {
+                  name
+                }
               }
             }
         "#,
@@ -158,6 +161,14 @@ async fn test_all_species() {
                     .as_str()
                     .unwrap(),
                 "A New Hope"
+            );
+            assert_eq!(
+                _q("$.data.allSpecies[0].homeworld.name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Coruscant"
             );
         },
     )
