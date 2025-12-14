@@ -11,7 +11,7 @@ use serde::{
     de::{self, DeserializeOwned, Deserializer},
     Deserialize,
 };
-use shared::{get_db_pool, SpeciesClassification, SpeciesDesignation};
+use shared::{get_db_pool, Language, SpeciesClassification, SpeciesDesignation};
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
 use tokio::fs::read_to_string;
@@ -518,7 +518,7 @@ struct SpeciesNestedFields {
     #[serde(deserialize_with = "deserialize_comma_separated_or_unknown")]
     skin_colors: Option<Vec<SkinColor>>,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
-    language: Option<String>,
+    language: Option<Language>,
     #[serde(deserialize_with = "deserialize_comma_separated_or_unknown")]
     hair_colors: Option<Vec<HairColor>>,
     homeworld: Option<u32>,
@@ -538,7 +538,7 @@ struct Species {
     designation: SpeciesDesignation,
     eye_colors: Option<Vec<EyeColor>>,
     skin_colors: Option<Vec<SkinColor>>,
-    language: Option<String>,
+    language: Option<Language>,
     hair_colors: Option<Vec<HairColor>>,
     homeworld: Option<u32>,
     average_lifespan: Option<u32>,

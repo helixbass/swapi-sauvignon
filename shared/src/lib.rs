@@ -64,3 +64,85 @@ impl FromStr for SpeciesDesignation {
         }
     }
 }
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Deserialize, Type, VariantNames, Display)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "snake_case")]
+pub enum Language {
+    GalacticBasic,
+    Shyriiwook,
+    Huttese,
+    Dosh,
+    MonCalamarian,
+    Ewokese,
+    Sullutese,
+    Neimoidia,
+    GunganBasic,
+    Toydarian,
+    Dugese,
+    TwiLeki,
+    Aleena,
+    Vulpterish,
+    Xextese,
+    Tundan,
+    Cerean,
+    Nautila,
+    Zabraki,
+    Iktotchese,
+    Quermian,
+    KelDor,
+    Chagria,
+    Geonosian,
+    Mirialan,
+    Clawdite,
+    Besalisk,
+    Kaminoan,
+    Skakoan,
+    Muun,
+    Togruti,
+    Kaleesh,
+    Utapese,
+}
+
+impl FromStr for Language {
+    type Err = &'static str;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "Galactic Basic" | "Galatic Basic" | "Galactic basic" => Ok(Self::GalacticBasic),
+            "Shyriiwook" => Ok(Self::Shyriiwook),
+            "Huttese" => Ok(Self::Huttese),
+            "Dosh" => Ok(Self::Dosh),
+            "Mon Calamarian" => Ok(Self::MonCalamarian),
+            "Ewokese" => Ok(Self::Ewokese),
+            "Sullutese" => Ok(Self::Sullutese),
+            "Neimoidia" => Ok(Self::Neimoidia),
+            "Gungan basic" => Ok(Self::GunganBasic),
+            "Toydarian" => Ok(Self::Toydarian),
+            "Dugese" => Ok(Self::Dugese),
+            "Twi'leki" => Ok(Self::TwiLeki),
+            "Aleena" => Ok(Self::Aleena),
+            "vulpterish" => Ok(Self::Vulpterish),
+            "Xextese" => Ok(Self::Xextese),
+            "Tundan" => Ok(Self::Tundan),
+            "Cerean" => Ok(Self::Cerean),
+            "Nautila" => Ok(Self::Nautila),
+            "Zabraki" => Ok(Self::Zabraki),
+            "Iktotchese" => Ok(Self::Iktotchese),
+            "Quermian" => Ok(Self::Quermian),
+            "Kel Dor" => Ok(Self::KelDor),
+            "Chagria" => Ok(Self::Chagria),
+            "Geonosian" => Ok(Self::Geonosian),
+            "Mirialan" => Ok(Self::Mirialan),
+            "Clawdite" => Ok(Self::Clawdite),
+            "besalisk" => Ok(Self::Besalisk),
+            "Kaminoan" => Ok(Self::Kaminoan),
+            "Skakoan" => Ok(Self::Skakoan),
+            "Muun" => Ok(Self::Muun),
+            "Togruti" => Ok(Self::Togruti),
+            "Kaleesh" => Ok(Self::Kaleesh),
+            "Utapese" => Ok(Self::Utapese),
+            _ => Err("Unknown language"),
+        }
+    }
+}
