@@ -1049,42 +1049,34 @@ async fn test_all_starships() {
                     .unwrap(),
                 "A New Hope"
             );
-            // assert_eq!(
-            //     _q("$.data.allStarships[0].length", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_number()
-            //         .unwrap()
-            //         .as_f64()
-            //         .unwrap(),
-            //     36.8
-            // );
-            // assert_eq!(
-            //     _q("$.data.allStarships[31].length", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_null()
-            //         .unwrap(),
-            //     ()
-            // );
-            // assert_eq!(
-            //     _q("$.data.allStarships[0].maxAtmospheringSpeed", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_number()
-            //         .unwrap()
-            //         .as_i64()
-            //         .unwrap(),
-            //     30
-            // );
-            // assert_eq!(
-            //     _q("$.data.allStarships[31].maxAtmospheringSpeed", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_null()
-            //         .unwrap(),
-            //     ()
-            // );
+            assert_eq!(
+                _q("$.data.allStarships[0].length", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                150.0
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].maxAtmospheringSpeed", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                950
+            );
+            assert_eq!(
+                _q("$.data.allStarships[22].maxAtmospheringSpeed", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
             // assert_eq!(
             //     _q("$.data.allStarships[0].model", response)
             //         .exactly_one()
