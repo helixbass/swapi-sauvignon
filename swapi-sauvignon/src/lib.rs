@@ -320,6 +320,20 @@ pub fn get_schema() -> Schema {
                             foreign_key => id
                         }
                     )
+                    // manufacturers => has_many(
+                    //     type => Manufacturer
+                    //     through => transport_manufacturers
+                    //     via_nested => {
+                    //         table_name => transports
+                    //         foreign_key => id
+                    //     }
+                    // )
+                    maxAtmospheringSpeed => optional_int_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
                 ]
             }
             SingleOrRangeSingle => {

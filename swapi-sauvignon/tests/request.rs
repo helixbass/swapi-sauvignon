@@ -930,6 +930,7 @@ async fn test_all_vehicles() {
                   title
                 }
                 length
+                maxAtmospheringSpeed
               }
             }
         "#,
@@ -1067,6 +1068,24 @@ async fn test_all_vehicles() {
             );
             assert_eq!(
                 _q("$.data.allVehicles[31].length", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].maxAtmospheringSpeed", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                30
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[31].maxAtmospheringSpeed", response)
                     .exactly_one()
                     .unwrap()
                     .as_null()
