@@ -245,6 +245,101 @@ pub fn get_schema() -> Schema {
                     mglt => optional_int_column()
                     id => id_column()
                     hyperdriveRating => optional_float_column()
+                    created => timestamp_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
+                    edited => timestamp_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
+                    cargoCapacity => optional_float_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
+                    consumables => optional_string_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
+                    costInCredits => optional_float_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
+                    crew => {
+                        type => SingleOrRange,
+                        internal_dependencies => [
+                            crew_start => optional_int_column(
+                                via_nested => {
+                                    table_name => transports
+                                    foreign_key => id
+                                }
+                            )
+                            crew_end => optional_int_column(
+                                via_nested => {
+                                    table_name => transports
+                                    foreign_key => id
+                                }
+                            )
+                        ]
+                        populator => custom {
+                            CarverOrPopulator::OptionalUnionOrInterfaceTypePopulator(
+                                Box::new(SingleOrRangeTypePopulator::default()),
+                                Populator::Dyn(Box::new(SingleOrRangePopulator::default())),
+                            )
+                        }
+                    }
+                    films => has_many(
+                        type => Film
+                        through => film_vehicles
+                    )
+                    length => optional_float_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
+                    // manufacturers => has_many(
+                    //     type => Manufacturer
+                    //     through => transport_manufacturers
+                    //     via_nested => {
+                    //         table_name => transports
+                    //         foreign_key => id
+                    //     }
+                    // )
+                    maxAtmospheringSpeed => optional_int_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
+                    model => string_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
+                    name => string_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
+                    passengers => optional_int_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
                 ]
             }
             Vehicle => {
