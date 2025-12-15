@@ -926,6 +926,9 @@ async fn test_all_vehicles() {
                     end
                   }
                 }
+                films {
+                  title
+                }
               }
             }
         "#,
@@ -1023,6 +1026,33 @@ async fn test_all_vehicles() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].crew.__typename", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "SingleOrRangeSingle"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].crew.value", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                46
+            );
+            assert_eq!(_q("$.data.allVehicles[0].films.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allVehicles[0].films[0].title", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "A New Hope"
             );
         },
     )

@@ -310,6 +310,10 @@ pub fn get_schema() -> Schema {
                             )
                         }
                     }
+                    films => has_many(
+                        type => Film
+                        through => film_vehicles
+                    )
                 ]
             }
             SingleOrRangeSingle => {
