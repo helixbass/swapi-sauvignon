@@ -918,6 +918,171 @@ async fn test_all_starships() {
                     .unwrap(),
                 ()
             );
+            assert_eq!(
+                _q("$.data.allStarships[0].created", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-10T14:20:33.369Z"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].edited", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-20T21:23:49.867Z"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].cargoCapacity", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                3000000.0
+            );
+            assert_eq!(
+                _q("$.data.allStarships[13].cargoCapacity", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].consumables", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "1 year"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[16].consumables", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            // assert_eq!(
+            //     _q("$.data.allStarships[0].costInCredits", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_number()
+            //         .unwrap()
+            //         .as_f64()
+            //         .unwrap(),
+            //     150000.0
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[4].costInCredits", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_null()
+            //         .unwrap(),
+            //     ()
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[0].crew.__typename", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_str()
+            //         .unwrap(),
+            //     "SingleOrRangeSingle"
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[0].crew.value", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_number()
+            //         .unwrap()
+            //         .as_i64()
+            //         .unwrap(),
+            //     46
+            // );
+            // assert_eq!(_q("$.data.allStarships[0].films.*", response).len(), 2);
+            // assert_eq!(
+            //     _q("$.data.allStarships[0].films[0].title", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_str()
+            //         .unwrap(),
+            //     "A New Hope"
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[0].length", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_number()
+            //         .unwrap()
+            //         .as_f64()
+            //         .unwrap(),
+            //     36.8
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[31].length", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_null()
+            //         .unwrap(),
+            //     ()
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[0].maxAtmospheringSpeed", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_number()
+            //         .unwrap()
+            //         .as_i64()
+            //         .unwrap(),
+            //     30
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[31].maxAtmospheringSpeed", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_null()
+            //         .unwrap(),
+            //     ()
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[0].model", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_str()
+            //         .unwrap(),
+            //     "Digger Crawler"
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[0].name", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_str()
+            //         .unwrap(),
+            //     "Sand Crawler"
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[0].passengers", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_number()
+            //         .unwrap()
+            //         .as_i64()
+            //         .unwrap(),
+            //     30
+            // );
+            // assert_eq!(
+            //     _q("$.data.allStarships[31].passengers", response)
+            //         .exactly_one()
+            //         .unwrap()
+            //         .as_null()
+            //         .unwrap(),
+            //     ()
+            // );
         },
     )
     .await;
