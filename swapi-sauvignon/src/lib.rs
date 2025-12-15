@@ -196,13 +196,19 @@ pub fn get_schema() -> Schema {
                     created => timestamp_column(
                         via_nested => {
                             table_name => transports
-                            id_column_name => id
+                            foreign_key => id
                         }
                     )
                     edited => timestamp_column(
                         via_nested => {
                             table_name => transports
-                            id_column_name => id
+                            foreign_key => id
+                        }
+                    )
+                    cargoCapacity => optional_float_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
                         }
                     )
                 ]
