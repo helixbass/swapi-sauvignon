@@ -18,11 +18,20 @@ impl OptionalUnionOrInterfaceTypePopulator for SingleOrRangeTypePopulator {
         _external_dependencies: &ExternalDependencyValues,
         internal_dependencies: &InternalDependencyValues,
     ) -> Option<String> {
-        internal_dependencies.get("crew_start")?;
-        Some(match internal_dependencies.get("crew_end") {
-            None => "SingleOrRangeSingle".to_owned(),
-            Some(_) => "SingleOrRangeRange".to_owned(),
-        })
+        internal_dependencies
+            .get("crew_start")
+            .unwrap()
+            .maybe_non_optional()?;
+        Some(
+            match internal_dependencies
+                .get("crew_end")
+                .unwrap()
+                .maybe_non_optional()
+            {
+                None => "SingleOrRangeSingle".to_owned(),
+                Some(_) => "SingleOrRangeRange".to_owned(),
+            },
+        )
     }
 }
 
@@ -36,10 +45,18 @@ impl PopulatorInterface for SingleOrRangePopulator {
         internal_dependencies: &InternalDependencyValues,
     ) -> ExternalDependencyValues {
         let mut ret = ExternalDependencyValues::default();
-        let Some(crew_start) = internal_dependencies.get("crew_start") else {
+        let Some(crew_start) = internal_dependencies
+            .get("crew_start")
+            .unwrap()
+            .maybe_non_optional()
+        else {
             return ret;
         };
-        match internal_dependencies.get("crew_end") {
+        match internal_dependencies
+            .get("crew_end")
+            .unwrap()
+            .maybe_non_optional()
+        {
             Some(crew_end) => {
                 ret.insert("start".to_owned(), crew_start.clone()).unwrap();
                 ret.insert("end".to_owned(), crew_end.clone()).unwrap();
