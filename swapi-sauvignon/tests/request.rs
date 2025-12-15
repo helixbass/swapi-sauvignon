@@ -1350,6 +1350,150 @@ async fn test_all_vehicles() {
     .await;
 }
 
+#[tokio::test]
+async fn test_planet() {
+    request_test(
+        r#"
+            {
+              planet(id: 2) {
+                name
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(
+                _q("$.data.planet.name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Alderaan"
+            );
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn test_film() {
+    request_test(
+        r#"
+            {
+              film(id: 2) {
+                title
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(
+                _q("$.data.film.title", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "The Empire Strikes Back"
+            );
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn test_starship() {
+    request_test(
+        r#"
+            {
+              starship(id: 3) {
+                name
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(
+                _q("$.data.starship.name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Star Destroyer"
+            );
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn test_vehicle() {
+    request_test(
+        r#"
+            {
+              vehicle(id: 6) {
+                name
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(
+                _q("$.data.vehicle.name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "T-16 skyhopper"
+            );
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn test_person() {
+    request_test(
+        r#"
+            {
+              person(id: 2) {
+                name
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(
+                _q("$.data.person.name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "C-3PO"
+            );
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn test_species() {
+    request_test(
+        r#"
+            {
+              species(id: 2) {
+                name
+              }
+            }
+        "#,
+        |response| {
+            assert_eq!(
+                _q("$.data.species.name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Droid"
+            );
+        },
+    )
+    .await;
+}
+
 fn _q<'a>(query: &str, response: &'a serde_json::Value) -> NodeList<'a> {
     let path = JsonPath::parse(query).unwrap();
     path.query(response)

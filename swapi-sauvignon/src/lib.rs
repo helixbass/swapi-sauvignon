@@ -512,6 +512,42 @@ pub fn get_schema() -> Schema {
                     ids => id_column_list()
                 ]
             }
+            planet => {
+                type => Planet!
+                params => [
+                    id => Id!
+                ]
+            }
+            film => {
+                type => Film!
+                params => [
+                    id => Id!
+                ]
+            }
+            person => {
+                type => Person!
+                params => [
+                    id => Id!
+                ]
+            }
+            species => {
+                type => Species!
+                params => [
+                    id => Id!
+                ]
+            }
+            starship => {
+                type => Starship!
+                params => [
+                    id => Id!
+                ]
+            }
+            vehicle => {
+                type => Vehicle!
+                params => [
+                    id => Id!
+                ]
+            }
         ]
         enums => [
             SpeciesClassification,
