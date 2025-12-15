@@ -932,6 +932,7 @@ async fn test_all_vehicles() {
                 length
                 maxAtmospheringSpeed
                 model
+                name
               }
             }
         "#,
@@ -1100,6 +1101,14 @@ async fn test_all_vehicles() {
                     .as_str()
                     .unwrap(),
                 "Digger Crawler"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Sand Crawler"
             );
         },
     )
