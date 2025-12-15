@@ -300,7 +300,7 @@ pub fn get_schema() -> Schema {
                     }
                     films => has_many(
                         type => Film
-                        through => film_vehicles
+                        through => film_starships
                     )
                     length => optional_float_column(
                         via_nested => {

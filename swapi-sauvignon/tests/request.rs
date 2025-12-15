@@ -829,6 +829,29 @@ async fn test_all_starships() {
                 mglt
                 id
                 hyperdriveRating
+                created
+                edited
+                cargoCapacity
+                consumables
+                costInCredits
+                crew {
+                  __typename
+                  ... on SingleOrRangeSingle {
+                    value
+                  }
+                  ... on SingleOrRangeRange {
+                    start
+                    end
+                  }
+                }
+                films {
+                  title
+                }
+                length
+                maxAtmospheringSpeed
+                model
+                name
+                passengers
               }
             }
         "#,
