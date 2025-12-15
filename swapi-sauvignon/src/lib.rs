@@ -314,6 +314,12 @@ pub fn get_schema() -> Schema {
                         type => Film
                         through => film_vehicles
                     )
+                    length => optional_float_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
                 ]
             }
             SingleOrRangeSingle => {

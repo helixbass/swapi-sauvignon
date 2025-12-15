@@ -929,6 +929,7 @@ async fn test_all_vehicles() {
                 films {
                   title
                 }
+                length
               }
             }
         "#,
@@ -1053,6 +1054,24 @@ async fn test_all_vehicles() {
                     .as_str()
                     .unwrap(),
                 "A New Hope"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].length", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                36.8
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[31].length", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )
