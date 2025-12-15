@@ -913,6 +913,7 @@ async fn test_all_vehicles() {
                 }
                 created
                 edited
+                cargoCapacity
               }
             }
         "#,
@@ -958,6 +959,24 @@ async fn test_all_vehicles() {
                     .as_str()
                     .unwrap(),
                 "2014-12-20T21:30:21.661Z"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].cargoCapacity", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                50000.0
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[15].cargoCapacity", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )
