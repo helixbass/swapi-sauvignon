@@ -223,6 +223,45 @@ pub fn get_schema() -> Schema {
                             foreign_key => id
                         }
                     )
+                    crew => {
+                        type => SingleOrRange!,
+                        internal_dependencies => [
+                            crew_start => optional_int_column()
+                            crew_end => optional_int_column()
+                        ]
+                        populator => custom {
+                            CarverOrPopulator::UnionOrInterfaceTypePopulator(
+                                Box::new(SingleOrRangeTypePopulator::new()),
+                                Box::new(SingleOrRangePopulator::new()),
+                            )
+                        }
+                    }
+                ]
+            }
+            SingleOrRangeSingle => {
+                fields => [
+                    value => {
+                        type => Int!
+                        carver => custom {
+                            CarverOrPopulator::IntCarver("value".to_owned())
+                        }
+                    }
+                ]
+            }
+            SingleOrRangeRange => {
+                fields => [
+                    start => {
+                        type => Int!
+                        carver => custom {
+                            CarverOrPopulator::IntCarver("start".to_owned())
+                        }
+                    }
+                    end => {
+                        type => Int
+                        carver => custom {
+                            CarverOrPopulator::OptionalIntCarver("end".to_owned())
+                        }
+                    }
                 ]
             }
         ]
@@ -277,6 +316,9 @@ pub fn get_schema() -> Schema {
             StarshipClass,
             VehicleClass,
             Gender,
+        ]
+        unions => [
+            SingleOrRange => [SingleOrRangeSingle, SingleOrRangeRange]
         ]
     }
 }
