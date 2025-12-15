@@ -912,6 +912,7 @@ async fn test_all_vehicles() {
                   name
                 }
                 created
+                edited
               }
             }
         "#,
@@ -949,6 +950,14 @@ async fn test_all_vehicles() {
                     .as_str()
                     .unwrap(),
                 "2014-12-10T15:36:25.724Z"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].edited", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-20T21:30:21.661Z"
             );
         },
     )

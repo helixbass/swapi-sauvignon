@@ -199,6 +199,12 @@ pub fn get_schema() -> Schema {
                             id_column_name => id
                         }
                     )
+                    edited => timestamp_column(
+                        via_nested => {
+                            table_name => transports
+                            id_column_name => id
+                        }
+                    )
                 ]
             }
         ]
