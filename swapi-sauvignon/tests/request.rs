@@ -1077,40 +1077,40 @@ async fn test_all_starships() {
                     .unwrap(),
                 ()
             );
-            // assert_eq!(
-            //     _q("$.data.allStarships[0].model", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_str()
-            //         .unwrap(),
-            //     "Digger Crawler"
-            // );
-            // assert_eq!(
-            //     _q("$.data.allStarships[0].name", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_str()
-            //         .unwrap(),
-            //     "Sand Crawler"
-            // );
-            // assert_eq!(
-            //     _q("$.data.allStarships[0].passengers", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_number()
-            //         .unwrap()
-            //         .as_i64()
-            //         .unwrap(),
-            //     30
-            // );
-            // assert_eq!(
-            //     _q("$.data.allStarships[31].passengers", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_null()
-            //         .unwrap(),
-            //     ()
-            // );
+            assert_eq!(
+                _q("$.data.allStarships[1].model", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Imperial I-class Star Destroyer"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[1].name", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Star Destroyer"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].passengers", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                600
+            );
+            assert_eq!(
+                _q("$.data.allStarships[19].passengers", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
         },
     )
     .await;
