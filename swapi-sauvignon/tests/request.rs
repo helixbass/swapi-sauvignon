@@ -914,6 +914,7 @@ async fn test_all_vehicles() {
                 created
                 edited
                 cargoCapacity
+                consumables
               }
             }
         "#,
@@ -972,6 +973,22 @@ async fn test_all_vehicles() {
             );
             assert_eq!(
                 _q("$.data.allVehicles[15].cargoCapacity", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].consumables", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2 months"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[2].consumables", response)
                     .exactly_one()
                     .unwrap()
                     .as_null()

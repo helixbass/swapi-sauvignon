@@ -211,6 +211,12 @@ pub fn get_schema() -> Schema {
                             foreign_key => id
                         }
                     )
+                    consumables => optional_string_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
                 ]
             }
         ]
