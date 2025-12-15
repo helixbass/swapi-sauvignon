@@ -1,7 +1,6 @@
 use sauvignon::{
     schema, CarverOrPopulator, ExternalDependencyValues, IntCarver, InternalDependencyValues,
-    OptionalIntCarver, OptionalUnionOrInterfaceTypePopulator, Populator, PopulatorInterface,
-    Schema,
+    OptionalUnionOrInterfaceTypePopulator, Populator, PopulatorInterface, Schema,
 };
 
 use shared::{
@@ -468,9 +467,9 @@ pub fn get_schema() -> Schema {
                         }
                     }
                     end => {
-                        type => Int
+                        type => Int!
                         carver => custom {
-                            CarverOrPopulator::Carver(Box::new(OptionalIntCarver::new("end".to_owned())))
+                            CarverOrPopulator::Carver(Box::new(IntCarver::new("end".to_owned())))
                         }
                     }
                 ]
