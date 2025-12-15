@@ -915,6 +915,7 @@ async fn test_all_vehicles() {
                 edited
                 cargoCapacity
                 consumables
+                costInCredits
               }
             }
         "#,
@@ -989,6 +990,24 @@ async fn test_all_vehicles() {
             );
             assert_eq!(
                 _q("$.data.allVehicles[2].consumables", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].costInCredits", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                150000.0
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[4].costInCredits", response)
                     .exactly_one()
                     .unwrap()
                     .as_null()

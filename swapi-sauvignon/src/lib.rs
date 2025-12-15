@@ -217,6 +217,12 @@ pub fn get_schema() -> Schema {
                             foreign_key => id
                         }
                     )
+                    costInCredits => optional_float_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
                 ]
             }
         ]
