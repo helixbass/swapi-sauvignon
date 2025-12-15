@@ -193,6 +193,12 @@ pub fn get_schema() -> Schema {
                         type => Person
                         through => vehicle_pilots
                     )
+                    created => timestamp_column(
+                        via_nested => {
+                            table_name => transports
+                            id_column_name => id
+                        }
+                    )
                 ]
             }
         ]

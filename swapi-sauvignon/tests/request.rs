@@ -911,6 +911,7 @@ async fn test_all_vehicles() {
                 pilots {
                   name
                 }
+                created
               }
             }
         "#,
@@ -940,6 +941,14 @@ async fn test_all_vehicles() {
                     .as_str()
                     .unwrap(),
                 "Luke Skywalker"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].created", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "2014-12-10T15:36:25.724Z"
             );
         },
     )
