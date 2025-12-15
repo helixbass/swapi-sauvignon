@@ -931,6 +931,7 @@ async fn test_all_vehicles() {
                 }
                 length
                 maxAtmospheringSpeed
+                model
               }
             }
         "#,
@@ -1091,6 +1092,14 @@ async fn test_all_vehicles() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].model", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "Digger Crawler"
             );
         },
     )
