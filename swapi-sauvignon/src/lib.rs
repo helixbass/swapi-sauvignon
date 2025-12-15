@@ -1,9 +1,53 @@
-use sauvignon::{schema, Schema};
+use sauvignon::{
+    schema, CarverOrPopulator, ExternalDependencyValues, IntCarver, InternalDependencyValues,
+    OptionalIntCarver, OptionalUnionOrInterfaceTypePopulator, Populator, PopulatorInterface,
+    Schema,
+};
 
 use shared::{
     Climate, EyeColor, Gender, HairColor, Language, ProducerOrDirector, SkinColor,
     SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
 };
+
+#[derive(Default)]
+struct SingleOrRangeTypePopulator {}
+
+impl OptionalUnionOrInterfaceTypePopulator for SingleOrRangeTypePopulator {
+    fn populate(
+        &self,
+        _external_dependencies: &ExternalDependencyValues,
+        internal_dependencies: &InternalDependencyValues,
+    ) -> Option<String> {
+        internal_dependencies.get("crew_start")?;
+        Some(match internal_dependencies.get("crew_end") {
+            None => "SingleOrRangeSingle".to_owned(),
+            Some(_) => "SingleOrRangeRange".to_owned(),
+        })
+    }
+}
+
+#[derive(Default)]
+struct SingleOrRangePopulator {}
+
+impl PopulatorInterface for SingleOrRangePopulator {
+    fn populate(
+        &self,
+        _external_dependencies: &ExternalDependencyValues,
+        internal_dependencies: &InternalDependencyValues,
+    ) -> ExternalDependencyValues {
+        let mut ret = ExternalDependencyValues::default();
+        let Some(crew_start) = internal_dependencies.get("crew_start") else {
+            return ret;
+        };
+        let crew_end = internal_dependencies.get("crew_end");
+        ret.insert("crew_start".to_owned(), crew_start.clone())
+            .unwrap();
+        if let Some(crew_end) = crew_end {
+            ret.insert("crew_end".to_owned(), crew_end.clone()).unwrap();
+        }
+        ret
+    }
+}
 
 pub fn get_schema() -> Schema {
     schema! {
@@ -224,15 +268,15 @@ pub fn get_schema() -> Schema {
                         }
                     )
                     crew => {
-                        type => SingleOrRange!,
+                        type => SingleOrRange,
                         internal_dependencies => [
                             crew_start => optional_int_column()
                             crew_end => optional_int_column()
                         ]
                         populator => custom {
-                            CarverOrPopulator::UnionOrInterfaceTypePopulator(
-                                Box::new(SingleOrRangeTypePopulator::new()),
-                                Box::new(SingleOrRangePopulator::new()),
+                            CarverOrPopulator::OptionalUnionOrInterfaceTypePopulator(
+                                Box::new(SingleOrRangeTypePopulator::default()),
+                                Populator::Dyn(Box::new(SingleOrRangePopulator::default())),
                             )
                         }
                     }
@@ -243,7 +287,7 @@ pub fn get_schema() -> Schema {
                     value => {
                         type => Int!
                         carver => custom {
-                            CarverOrPopulator::IntCarver("value".to_owned())
+                            CarverOrPopulator::Carver(Box::new(IntCarver::new("value".to_owned())))
                         }
                     }
                 ]
@@ -253,13 +297,13 @@ pub fn get_schema() -> Schema {
                     start => {
                         type => Int!
                         carver => custom {
-                            CarverOrPopulator::IntCarver("start".to_owned())
+                            CarverOrPopulator::Carver(Box::new(IntCarver::new("start".to_owned())))
                         }
                     }
                     end => {
                         type => Int
                         carver => custom {
-                            CarverOrPopulator::OptionalIntCarver("end".to_owned())
+                            CarverOrPopulator::Carver(Box::new(OptionalIntCarver::new("end".to_owned())))
                         }
                     }
                 ]
