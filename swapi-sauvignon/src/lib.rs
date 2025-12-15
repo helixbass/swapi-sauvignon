@@ -39,11 +39,14 @@ impl PopulatorInterface for SingleOrRangePopulator {
         let Some(crew_start) = internal_dependencies.get("crew_start") else {
             return ret;
         };
-        let crew_end = internal_dependencies.get("crew_end");
-        ret.insert("crew_start".to_owned(), crew_start.clone())
-            .unwrap();
-        if let Some(crew_end) = crew_end {
-            ret.insert("crew_end".to_owned(), crew_end.clone()).unwrap();
+        match internal_dependencies.get("crew_end") {
+            Some(crew_end) => {
+                ret.insert("start".to_owned(), crew_start.clone()).unwrap();
+                ret.insert("end".to_owned(), crew_end.clone()).unwrap();
+            }
+            None => {
+                ret.insert("value".to_owned(), crew_start.clone()).unwrap();
+            }
         }
         ret
     }
