@@ -933,6 +933,7 @@ async fn test_all_vehicles() {
                 maxAtmospheringSpeed
                 model
                 name
+                passengers
               }
             }
         "#,
@@ -1109,6 +1110,24 @@ async fn test_all_vehicles() {
                     .as_str()
                     .unwrap(),
                 "Sand Crawler"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[0].passengers", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                30
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[31].passengers", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
             );
         },
     )

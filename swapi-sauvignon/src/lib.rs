@@ -346,6 +346,12 @@ pub fn get_schema() -> Schema {
                             foreign_key => id
                         }
                     )
+                    passengers => optional_int_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
                 ]
             }
             SingleOrRangeSingle => {
