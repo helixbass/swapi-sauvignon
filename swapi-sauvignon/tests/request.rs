@@ -968,42 +968,78 @@ async fn test_all_starships() {
                     .unwrap(),
                 ()
             );
-            // assert_eq!(
-            //     _q("$.data.allStarships[0].costInCredits", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_number()
-            //         .unwrap()
-            //         .as_f64()
-            //         .unwrap(),
-            //     150000.0
-            // );
-            // assert_eq!(
-            //     _q("$.data.allStarships[4].costInCredits", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_null()
-            //         .unwrap(),
-            //     ()
-            // );
-            // assert_eq!(
-            //     _q("$.data.allStarships[0].crew.__typename", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_str()
-            //         .unwrap(),
-            //     "SingleOrRangeSingle"
-            // );
-            // assert_eq!(
-            //     _q("$.data.allStarships[0].crew.value", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_number()
-            //         .unwrap()
-            //         .as_i64()
-            //         .unwrap(),
-            //     46
-            // );
+            assert_eq!(
+                _q("$.data.allStarships[0].costInCredits", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_f64()
+                    .unwrap(),
+                3500000.0
+            );
+            assert_eq!(
+                _q("$.data.allStarships[7].costInCredits", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].crew.__typename", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "SingleOrRangeRange"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].crew.start", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                30
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].crew.end", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                165
+            );
+            assert_eq!(
+                _q("$.data.allStarships[1].crew.__typename", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "SingleOrRangeSingle"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[1].crew.value", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_number()
+                    .unwrap()
+                    .as_i64()
+                    .unwrap(),
+                47060
+            );
+            assert_eq!(
+                _q("$.data.allStarships[22].crew", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_null()
+                    .unwrap(),
+                ()
+            );
             // assert_eq!(_q("$.data.allStarships[0].films.*", response).len(), 2);
             // assert_eq!(
             //     _q("$.data.allStarships[0].films[0].title", response)
