@@ -334,6 +334,12 @@ pub fn get_schema() -> Schema {
                             foreign_key => id
                         }
                     )
+                    model => string_column(
+                        via_nested => {
+                            table_name => transports
+                            foreign_key => id
+                        }
+                    )
                 ]
             }
             SingleOrRangeSingle => {
