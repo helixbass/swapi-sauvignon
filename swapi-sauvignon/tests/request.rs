@@ -1040,15 +1040,15 @@ async fn test_all_starships() {
                     .unwrap(),
                 ()
             );
-            // assert_eq!(_q("$.data.allStarships[0].films.*", response).len(), 2);
-            // assert_eq!(
-            //     _q("$.data.allStarships[0].films[0].title", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_str()
-            //         .unwrap(),
-            //     "A New Hope"
-            // );
+            assert_eq!(_q("$.data.allStarships[0].films.*", response).len(), 3);
+            assert_eq!(
+                _q("$.data.allStarships[0].films[0].title", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "A New Hope"
+            );
             // assert_eq!(
             //     _q("$.data.allStarships[0].length", response)
             //         .exactly_one()
