@@ -916,6 +916,16 @@ async fn test_all_vehicles() {
                 cargoCapacity
                 consumables
                 costInCredits
+                crew {
+                  __typename
+                  ... on SingleOrRangeSingle {
+                    value
+                  }
+                  ... on SingleOrRangeRange {
+                    start
+                    end
+                  }
+                }
               }
             }
         "#,

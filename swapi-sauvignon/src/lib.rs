@@ -270,8 +270,18 @@ pub fn get_schema() -> Schema {
                     crew => {
                         type => SingleOrRange,
                         internal_dependencies => [
-                            crew_start => optional_int_column()
-                            crew_end => optional_int_column()
+                            crew_start => optional_int_column(
+                                via_nested => {
+                                    table_name => transports
+                                    foreign_key => id
+                                }
+                            )
+                            crew_end => optional_int_column(
+                                via_nested => {
+                                    table_name => transports
+                                    foreign_key => id
+                                }
+                            )
                         ]
                         populator => custom {
                             CarverOrPopulator::OptionalUnionOrInterfaceTypePopulator(
