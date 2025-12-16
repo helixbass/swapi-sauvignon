@@ -7,7 +7,7 @@ use sauvignon::{
 use sqlx::{Pool, Postgres};
 
 use shared::{
-    Climate, EyeColor, Gender, HairColor, Language, ProducerOrDirector, SkinColor,
+    Climate, EyeColor, Gender, HairColor, Language, Manufacturer, ProducerOrDirector, SkinColor,
     SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
 };
 

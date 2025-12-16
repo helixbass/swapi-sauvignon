@@ -12,8 +12,8 @@ use serde::{
     Deserialize,
 };
 use shared::{
-    get_db_pool, Climate, EyeColor, Gender, HairColor, Language, ProducerOrDirector, SkinColor,
-    SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
+    get_db_pool, Climate, EyeColor, Gender, HairColor, Language, Manufacturer, ProducerOrDirector,
+    SkinColor, SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
 };
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
@@ -844,122 +844,6 @@ impl From<TransportNested> for Transport {
             model: value.fields.model,
             cost_in_credits: value.fields.cost_in_credits,
             manufacturers: value.fields.manufacturers,
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-enum Manufacturer {
-    CorellianEngineeringCorporation,
-    KuatDriveYards,
-    CorelliaMiningCorporation,
-    SienarFleetSystems,
-    CyngusSpaceworks,
-    IncomCorporation,
-    SoroSuubCorporation,
-    ImperialDepartmentOfMilitaryResearch,
-    KoensayrManufacturing,
-    FondorShipyards,
-    GallofreeYardsInc,
-    BespinMotors,
-    KuatSystemsEngineering,
-    UbrikkianIndustriesCustomVehicleDivision,
-    UbrikkianIndustries,
-    MonCalamariShipyards,
-    AllianceUndergroundEngineering,
-    SlaynAndKorpil,
-    AratechRepulsorCompany,
-    HoerschKesselDriveInc,
-    HaorChallEngineering,
-    BaktoidArmorWorkshop,
-    OtohGungaBongamekenCooperative,
-    TheedPalaceSpaceVesselEngineeringCorps,
-    NubiaStarDrives,
-    RepublicSienarSystems,
-    Razalon,
-    MobquetSwoopsAndSpeeders,
-    DeslerGizhOutworldMobilityCorporation,
-    NarglatchAirTechPrefabricatedKit,
-    BotajefShipyards,
-    RothanaHeavyEngineering,
-    HupplaPasaTiscShipwrightsCollective,
-    RendiliStarDrive,
-    FreeDacVolunteersEngineeringCorps,
-    ZGomotTernbuellGuppatCorporation,
-    AllanteenSixShipyards,
-    SubproCorporation,
-    CollaDesigns,
-    PhlacArphoccAutomataIndustries,
-    GworiRevolutionaryIndustries,
-    AppazannaEngineeringWorks,
-    TechnoUnion,
-    BaktoidFleetOrdnance,
-    FeethanOttrawScalableAssemblies,
-}
-
-impl FromStr for Manufacturer {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "Corellian Engineering Corporation" => Ok(Self::CorellianEngineeringCorporation),
-            "Kuat Drive Yards" => Ok(Self::KuatDriveYards),
-            "Corellia Mining Corporation" => Ok(Self::CorelliaMiningCorporation),
-            "Sienar Fleet Systems" => Ok(Self::SienarFleetSystems),
-            "Cyngus Spaceworks" | "Cygnus Spaceworks" => Ok(Self::CyngusSpaceworks),
-            "Incom Corporation" | "Incom corporation" => Ok(Self::IncomCorporation),
-            "SoroSuub Corporation" => Ok(Self::SoroSuubCorporation),
-            "Imperial Department of Military Research" => {
-                Ok(Self::ImperialDepartmentOfMilitaryResearch)
-            }
-            "Koensayr Manufacturing" => Ok(Self::KoensayrManufacturing),
-            "Fondor Shipyards" => Ok(Self::FondorShipyards),
-            "Gallofree Yards, Inc." => Ok(Self::GallofreeYardsInc),
-            "Bespin Motors" => Ok(Self::BespinMotors),
-            "Kuat Systems Engineering" => Ok(Self::KuatSystemsEngineering),
-            "Ubrikkian Industries Custom Vehicle Division" => {
-                Ok(Self::UbrikkianIndustriesCustomVehicleDivision)
-            }
-            "Ubrikkian Industries" => Ok(Self::UbrikkianIndustries),
-            "Mon Calamari shipyards" => Ok(Self::MonCalamariShipyards),
-            "Alliance Underground Engineering" => Ok(Self::AllianceUndergroundEngineering),
-            "Slayn & Korpil" => Ok(Self::SlaynAndKorpil),
-            "Aratech Repulsor Company" => Ok(Self::AratechRepulsorCompany),
-            "Hoersch-Kessel Drive, Inc." | "Hoersch-Kessel Drive, Inc" => {
-                Ok(Self::HoerschKesselDriveInc)
-            }
-            "Haor Chall Engineering" => Ok(Self::HaorChallEngineering),
-            "Baktoid Armor Workshop" => Ok(Self::BaktoidArmorWorkshop),
-            "Otoh Gunga Bongameken Cooperative" => Ok(Self::OtohGungaBongamekenCooperative),
-            "Theed Palace Space Vessel Engineering Corps" => {
-                Ok(Self::TheedPalaceSpaceVesselEngineeringCorps)
-            }
-            "Nubia Star Drives" | "Nubia Star Drives, Incorporated" => Ok(Self::NubiaStarDrives),
-            "Republic Sienar Systems" => Ok(Self::RepublicSienarSystems),
-            "Razalon" => Ok(Self::Razalon),
-            "Mobquet Swoops and Speeders" => Ok(Self::MobquetSwoopsAndSpeeders),
-            "Desler Gizh Outworld Mobility Corporation" => {
-                Ok(Self::DeslerGizhOutworldMobilityCorporation)
-            }
-            "Narglatch AirTech prefabricated kit" => Ok(Self::NarglatchAirTechPrefabricatedKit),
-            "Botajef Shipyards" => Ok(Self::BotajefShipyards),
-            "Rothana Heavy Engineering" => Ok(Self::RothanaHeavyEngineering),
-            "Huppla Pasa Tisc Shipwrights Collective" => {
-                Ok(Self::HupplaPasaTiscShipwrightsCollective)
-            }
-            "Rendili StarDrive" => Ok(Self::RendiliStarDrive),
-            "Free Dac Volunteers Engineering corps." => Ok(Self::FreeDacVolunteersEngineeringCorps),
-            "Z-Gomot Ternbuell Guppat Corporation" => Ok(Self::ZGomotTernbuellGuppatCorporation),
-            "Allanteen Six shipyards" => Ok(Self::AllanteenSixShipyards),
-            "Subpro Corporation" => Ok(Self::SubproCorporation),
-            "Colla Designs" => Ok(Self::CollaDesigns),
-            "Phlac-Arphocc Automata Industries" => Ok(Self::PhlacArphoccAutomataIndustries),
-            "Gwori Revolutionary Industries" => Ok(Self::GworiRevolutionaryIndustries),
-            "Appazanna Engineering Works" => Ok(Self::AppazannaEngineeringWorks),
-            "Techno Union" => Ok(Self::TechnoUnion),
-            "Baktoid Fleet Ordnance" => Ok(Self::BaktoidFleetOrdnance),
-            "Feethan Ottraw Scalable Assemblies" => Ok(Self::FeethanOttrawScalableAssemblies),
-            _ => Err("Unknown manufacturer"),
         }
     }
 }
