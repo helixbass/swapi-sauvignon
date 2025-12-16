@@ -4,6 +4,7 @@ use sauvignon::{
     OptionalUnionOrInterfaceTypePopulator, Populator, PopulatorInterface, PostgresColumnMassager,
     PostgresDatabase, Schema,
 };
+use sqlx::{Pool, Postgres};
 
 use shared::{
     Climate, EyeColor, Gender, HairColor, Language, ProducerOrDirector, SkinColor,
@@ -571,8 +572,9 @@ pub fn get_schema() -> Schema {
     }
 }
 
-pub fn get_database() -> PostgresDatabase {
+pub fn get_database(db_pool: Pool<Postgres>) -> PostgresDatabase {
     PostgresDatabase::new(
+        db_pool,
         [
             ("planet_climates", "climate", enum_string_massager!(Climate)),
             ("planet_terrains", "terrain", enum_string_massager!(Terrain)),
