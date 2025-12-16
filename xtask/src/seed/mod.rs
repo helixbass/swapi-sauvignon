@@ -11,7 +11,10 @@ use serde::{
     de::{self, DeserializeOwned, Deserializer},
     Deserialize,
 };
-use shared::get_db_pool;
+use shared::{
+    get_db_pool, Climate, EyeColor, Gender, HairColor, Language, ProducerOrDirector, SkinColor,
+    SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
+};
 use sqlx::{Pool, Postgres, QueryBuilder, Type};
 use squalid::{_d, fancy_regex, regex};
 use tokio::fs::read_to_string;
@@ -219,172 +222,6 @@ impl From<PlanetNested> for Planet {
     }
 }
 
-#[derive(Copy, Clone, Debug, Type)]
-enum Climate {
-    Arid,
-    Temperate,
-    Tropical,
-    Frozen,
-    Murky,
-    Windy,
-    Hot,
-    ArtificialTemperate,
-    Frigid,
-    Humid,
-    Moist,
-    Polluted,
-    Superheated,
-    Subarctic,
-    Arctic,
-    Rocky,
-}
-
-impl FromStr for Climate {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "arid" => Ok(Self::Arid),
-            "temperate" => Ok(Self::Temperate),
-            "tropical" => Ok(Self::Tropical),
-            "frozen" => Ok(Self::Frozen),
-            "murky" => Ok(Self::Murky),
-            "windy" => Ok(Self::Windy),
-            "hot" => Ok(Self::Hot),
-            "artificial temperate" => Ok(Self::ArtificialTemperate),
-            "frigid" => Ok(Self::Frigid),
-            "humid" => Ok(Self::Humid),
-            "moist" => Ok(Self::Moist),
-            "polluted" => Ok(Self::Polluted),
-            "superheated" => Ok(Self::Superheated),
-            "subartic" => Ok(Self::Subarctic),
-            "artic" => Ok(Self::Arctic),
-            "rocky" => Ok(Self::Rocky),
-            _ => Err("Unknown climate"),
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Type)]
-enum Terrain {
-    Desert,
-    Grasslands,
-    Mountains,
-    Jungle,
-    Rainforests,
-    Tundra,
-    IceCaves,
-    MountainRanges,
-    Swamp,
-    GasGiant,
-    Forests,
-    Lakes,
-    GrassyHills,
-    Cityscape,
-    Ocean,
-    Rock,
-    Barren,
-    Scrublands,
-    Savanna,
-    Canyons,
-    Sinkholes,
-    Volcanoes,
-    LavaRivers,
-    Caves,
-    Rivers,
-    AirlessAsteroid,
-    Glaciers,
-    IceCanyons,
-    FungusForests,
-    Fields,
-    RockArches,
-    Grass,
-    Plains,
-    Urban,
-    Hills,
-    Bogs,
-    RockyIslands,
-    Seas,
-    Mesas,
-    Islands,
-    Reefs,
-    RockyDeserts,
-    Valleys,
-    Ash,
-    ToxicCloudsea,
-    Plateaus,
-    Verdant,
-    RockyCanyons,
-    AcidPools,
-    Rocky,
-    Vines,
-    Cities,
-    Cliffs,
-}
-
-impl FromStr for Terrain {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "desert" | "deserts" => Ok(Self::Desert),
-            "grasslands" => Ok(Self::Grasslands),
-            "mountains" | "mountain" => Ok(Self::Mountains),
-            "jungle" | "jungles" => Ok(Self::Jungle),
-            "rainforests" => Ok(Self::Rainforests),
-            "tundra" => Ok(Self::Tundra),
-            "ice caves" => Ok(Self::IceCaves),
-            "mountain ranges" => Ok(Self::MountainRanges),
-            "swamp" | "swamps" => Ok(Self::Swamp),
-            "gas giant" => Ok(Self::GasGiant),
-            "forests" => Ok(Self::Forests),
-            "lakes" => Ok(Self::Lakes),
-            "grassy hills" => Ok(Self::GrassyHills),
-            "cityscape" => Ok(Self::Cityscape),
-            "ocean" | "oceans" => Ok(Self::Ocean),
-            "rock" => Ok(Self::Rock),
-            "barren" => Ok(Self::Barren),
-            "scrublands" => Ok(Self::Scrublands),
-            "savanna" | "savannas" | "savannahs" => Ok(Self::Savanna),
-            "canyons" => Ok(Self::Canyons),
-            "sinkholes" => Ok(Self::Sinkholes),
-            "volcanoes" => Ok(Self::Volcanoes),
-            "lava rivers" => Ok(Self::LavaRivers),
-            "caves" => Ok(Self::Caves),
-            "rivers" => Ok(Self::Rivers),
-            "airless asteroid" => Ok(Self::AirlessAsteroid),
-            "glaciers" => Ok(Self::Glaciers),
-            "ice canyons" => Ok(Self::IceCanyons),
-            "fungus forests" => Ok(Self::FungusForests),
-            "fields" => Ok(Self::Fields),
-            "rock arches" => Ok(Self::RockArches),
-            "grass" => Ok(Self::Grass),
-            "plains" => Ok(Self::Plains),
-            "urban" => Ok(Self::Urban),
-            "hills" => Ok(Self::Hills),
-            "bogs" => Ok(Self::Bogs),
-            "rocky islands" => Ok(Self::RockyIslands),
-            "seas" => Ok(Self::Seas),
-            "mesas" => Ok(Self::Mesas),
-            "islands" => Ok(Self::Islands),
-            "reefs" => Ok(Self::Reefs),
-            "rocky deserts" => Ok(Self::RockyDeserts),
-            "valleys" => Ok(Self::Valleys),
-            "ash" => Ok(Self::Ash),
-            "toxic cloudsea" => Ok(Self::ToxicCloudsea),
-            "plateaus" => Ok(Self::Plateaus),
-            "verdant" => Ok(Self::Verdant),
-            "rocky canyons" => Ok(Self::RockyCanyons),
-            "acid pools" => Ok(Self::AcidPools),
-            "rocky" => Ok(Self::Rocky),
-            "vines" => Ok(Self::Vines),
-            "cities" => Ok(Self::Cities),
-            "cliffs" => Ok(Self::Cliffs),
-            _ => Err("Unknown terrain"),
-        }
-    }
-}
-
 async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u32>> {
     let species = parse_json_file::<Vec<SpeciesNested>>("species").await?;
 
@@ -410,7 +247,7 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
 
     let species: Vec<Species> = species.into_iter().map(Into::into).collect();
 
-    let mut query_builder = QueryBuilder::new("INSERT INTO species (id, edited, created, name, classification, designation, language, homeworld, average_lifespan, average_height)");
+    let mut query_builder = QueryBuilder::new("INSERT INTO species (id, edited, created, name, classification, designation, language, homeworld_id, average_lifespan, average_height)");
     query_builder.push_values(&species, |mut builder, species| {
         builder
             .push_bind(i32::try_from(species.id).unwrap())
@@ -454,6 +291,9 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
         },
     );
 
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
     let mut query_builder =
         QueryBuilder::new("INSERT INTO species_eye_colors (species_id, eye_color)");
     query_builder.push_values(
@@ -472,6 +312,9 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
         },
     );
 
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
+
     let mut query_builder =
         QueryBuilder::new("INSERT INTO species_hair_colors (species_id, hair_color)");
     query_builder.push_values(
@@ -489,6 +332,9 @@ async fn seed_species(db_pool: &Pool<Postgres>) -> anyhow::Result<HashMap<u32, u
                 .push_bind(hair_color);
         },
     );
+
+    let query = query_builder.build();
+    query.execute(db_pool).await?;
 
     Ok(people_species)
 }
@@ -518,7 +364,7 @@ struct SpeciesNestedFields {
     #[serde(deserialize_with = "deserialize_comma_separated_or_unknown")]
     skin_colors: Option<Vec<SkinColor>>,
     #[serde(deserialize_with = "deserialize_from_str_or_unknown")]
-    language: Option<String>,
+    language: Option<Language>,
     #[serde(deserialize_with = "deserialize_comma_separated_or_unknown")]
     hair_colors: Option<Vec<HairColor>>,
     homeworld: Option<u32>,
@@ -538,7 +384,7 @@ struct Species {
     designation: SpeciesDesignation,
     eye_colors: Option<Vec<EyeColor>>,
     skin_colors: Option<Vec<SkinColor>>,
-    language: Option<String>,
+    language: Option<Language>,
     hair_colors: Option<Vec<HairColor>>,
     homeworld: Option<u32>,
     average_lifespan: Option<u32>,
@@ -565,56 +411,6 @@ impl From<SpeciesNested> for Species {
     }
 }
 
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-#[serde(rename_all = "snake_case")]
-enum SpeciesClassification {
-    Mammal,
-    Artificial,
-    Sentient,
-    Gastropod,
-    Reptile,
-    Amphibian,
-    Insectoid,
-    Reptilian,
-}
-
-impl FromStr for SpeciesClassification {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "mammal" | "mammals" => Ok(Self::Mammal),
-            "artificial" => Ok(Self::Artificial),
-            "sentient" => Ok(Self::Sentient),
-            "gastropod" => Ok(Self::Gastropod),
-            "reptile" => Ok(Self::Reptile),
-            "amphibian" => Ok(Self::Amphibian),
-            "insectoid" => Ok(Self::Insectoid),
-            "reptilian" => Ok(Self::Reptilian),
-            _ => Err("Unknown species classification"),
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-#[serde(rename_all = "snake_case")]
-enum SpeciesDesignation {
-    Sentient,
-    Reptilian,
-}
-
-impl FromStr for SpeciesDesignation {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "sentient" => Ok(Self::Sentient),
-            "reptilian" => Ok(Self::Reptilian),
-            _ => Err("Unknown species designation"),
-        }
-    }
-}
-
 async fn seed_people(
     db_pool: &Pool<Postgres>,
     people_species: &HashMap<u32, u32>,
@@ -625,7 +421,7 @@ async fn seed_people(
         .map(Into::into)
         .collect();
 
-    let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld, birth_year, species_id)");
+    let mut query_builder = QueryBuilder::new("INSERT INTO people (id, edited, created, name, gender, height, mass, homeworld_id, birth_year, species_id)");
     query_builder.push_values(&people, |mut builder, person| {
         builder
             .push_bind(i32::try_from(person.id).unwrap())
@@ -786,177 +582,6 @@ impl From<PersonNested> for Person {
             mass: value.fields.mass,
             homeworld: value.fields.homeworld,
             birth_year: value.fields.birth_year,
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-#[serde(rename_all = "snake_case")]
-enum Gender {
-    Male,
-    Female,
-    Hermaphrodite,
-}
-
-impl FromStr for Gender {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "male" => Ok(Self::Male),
-            "female" => Ok(Self::Female),
-            "hermaphrodite" => Ok(Self::Hermaphrodite),
-            _ => Err("Unknown gender"),
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-// #[serde(rename_all = "kebab-case")]
-enum SkinColor {
-    Caucasian,
-    Black,
-    Asian,
-    Hispanic,
-    Grey,
-    Fair,
-    Gold,
-    White,
-    Blue,
-    Light,
-    Red,
-    Green,
-    GreenTan,
-    Brown,
-    Pale,
-    Metal,
-    Dark,
-    BrownMottle,
-    MottledGreen,
-    Orange,
-    Yellow,
-    Tan,
-    Silver,
-    Magenta,
-    Purple,
-    Pink,
-    PalePink,
-    Peach,
-}
-
-impl FromStr for SkinColor {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "caucasian" => Ok(Self::Caucasian),
-            "black" => Ok(Self::Black),
-            "asian" => Ok(Self::Asian),
-            "hispanic" => Ok(Self::Hispanic),
-            "gray" | "grey" => Ok(Self::Grey),
-            "fair" => Ok(Self::Fair),
-            "gold" => Ok(Self::Gold),
-            "white" => Ok(Self::White),
-            "blue" => Ok(Self::Blue),
-            "light" => Ok(Self::Light),
-            "red" => Ok(Self::Red),
-            "green" => Ok(Self::Green),
-            "green-tan" => Ok(Self::GreenTan),
-            "brown" => Ok(Self::Brown),
-            "pale" => Ok(Self::Pale),
-            "metal" => Ok(Self::Metal),
-            "dark" => Ok(Self::Dark),
-            "brown mottle" => Ok(Self::BrownMottle),
-            "mottled green" => Ok(Self::MottledGreen),
-            "orange" => Ok(Self::Orange),
-            "yellow" => Ok(Self::Yellow),
-            "tan" => Ok(Self::Tan),
-            "silver" => Ok(Self::Silver),
-            "magenta" => Ok(Self::Magenta),
-            "purple" => Ok(Self::Purple),
-            "pink" => Ok(Self::Pink),
-            "pale pink" => Ok(Self::PalePink),
-            "peach" => Ok(Self::Peach),
-            _ => Err("Unknown skin color"),
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-#[serde(rename_all = "snake_case")]
-enum HairColor {
-    #[serde(alias = "blond")]
-    Blonde,
-    Brown,
-    Black,
-    Red,
-    Grey,
-    Auburn,
-    White,
-}
-
-impl FromStr for HairColor {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "blonde" | "blond" => Ok(Self::Blonde),
-            "brown" => Ok(Self::Brown),
-            "black" => Ok(Self::Black),
-            "red" => Ok(Self::Red),
-            "grey" => Ok(Self::Grey),
-            "auburn" => Ok(Self::Auburn),
-            "white" => Ok(Self::White),
-            _ => Err("Unknown hair color"),
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-#[serde(rename_all = "kebab-case")]
-enum EyeColor {
-    Brown,
-    Blue,
-    Green,
-    Hazel,
-    Grey,
-    Amber,
-    Yellow,
-    Golden,
-    Red,
-    Black,
-    BlueGray,
-    Orange,
-    Pink,
-    Gold,
-    White,
-    Indigo,
-    Silver,
-}
-
-impl FromStr for EyeColor {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "brown" => Ok(Self::Brown),
-            "blue" => Ok(Self::Blue),
-            "green" => Ok(Self::Green),
-            "hazel" => Ok(Self::Hazel),
-            "grey" => Ok(Self::Grey),
-            "amber" => Ok(Self::Amber),
-            "yellow" => Ok(Self::Yellow),
-            "golden" => Ok(Self::Golden),
-            "red" => Ok(Self::Red),
-            "black" => Ok(Self::Black),
-            "blue-gray" => Ok(Self::BlueGray),
-            "orange" => Ok(Self::Orange),
-            "pink" => Ok(Self::Pink),
-            "gold" => Ok(Self::Gold),
-            "white" => Ok(Self::White),
-            "indigo" => Ok(Self::Indigo),
-            "silver" => Ok(Self::Silver),
-            _ => Err("Unknown eye color"),
         }
     }
 }
@@ -1381,58 +1006,6 @@ impl From<StarshipNested> for Starship {
     }
 }
 
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-enum StarshipClass {
-    #[serde(alias = "corvette")]
-    Corvette,
-    #[serde(alias = "Star Destroyer")]
-    #[serde(alias = "star destroyer")]
-    StarDestroyer,
-    #[serde(alias = "landing craft")]
-    LandingCraft,
-    #[serde(alias = "Deep Space Mobile Battlestation")]
-    DeepSpaceMobileBattlestation,
-    #[serde(alias = "Light freighter")]
-    LightFreighter,
-    #[serde(alias = "assault starfighter")]
-    #[serde(alias = "Assault Starfighter")]
-    AssaultStarfighter,
-    #[serde(alias = "starfighter")]
-    Starfighter,
-    #[serde(alias = "Star dreadnought")]
-    StarDreadnought,
-    #[serde(alias = "Medium transport")]
-    MediumTransport,
-    #[serde(alias = "Patrol craft")]
-    PatrolCraft,
-    #[serde(alias = "Armed government transport")]
-    ArmedGovernmentTransport,
-    #[serde(alias = "Escort ship")]
-    EscortShip,
-    #[serde(alias = "Star Cruiser")]
-    StarCruiser,
-    #[serde(alias = "Space cruiser")]
-    SpaceCruiser,
-    #[serde(alias = "Droid control ship")]
-    DroidControlShip,
-    #[serde(alias = "yacht")]
-    Yacht,
-    #[serde(alias = "Space Transport")]
-    SpaceTransport,
-    #[serde(alias = "Diplomatic barge")]
-    DiplomaticBarge,
-    #[serde(alias = "freighter")]
-    Freighter,
-    #[serde(alias = "assault ship")]
-    AssaultShip,
-    #[serde(alias = "capital ship")]
-    CapitalShip,
-    #[serde(alias = "transport")]
-    Transport,
-    #[serde(alias = "cruiser")]
-    Cruiser,
-}
-
 #[derive(Debug)]
 enum SingleOrRange {
     Single(u32),
@@ -1471,47 +1044,6 @@ impl From<VehicleNested> for Vehicle {
             vehicle_class: value.fields.vehicle_class,
         }
     }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-enum VehicleClass {
-    #[serde(alias = "wheeled")]
-    Wheeled,
-    #[serde(alias = "repulsorcraft")]
-    Repulsorcraft,
-    #[serde(alias = "starfighter")]
-    Starfighter,
-    #[serde(alias = "airspeeder")]
-    #[serde(alias = "air speeder")]
-    Airspeeder,
-    #[serde(alias = "space/planetary bomber")]
-    SpacePlanetaryBomber,
-    #[serde(alias = "assault walker")]
-    AssaultWalker,
-    #[serde(alias = "walker")]
-    Walker,
-    #[serde(alias = "sail barge")]
-    SailBarge,
-    #[serde(alias = "repulsorcraft cargo skiff")]
-    RepulsorcraftCargoSkiff,
-    #[serde(alias = "speeder")]
-    Speeder,
-    #[serde(alias = "landing craft")]
-    LandingCraft,
-    #[serde(alias = "submarine")]
-    Submarine,
-    #[serde(alias = "gunship")]
-    Gunship,
-    #[serde(alias = "transport")]
-    Transport,
-    #[serde(alias = "wheeled walker")]
-    WheeledWalker,
-    #[serde(alias = "fire suppression ship")]
-    FireSuppressionShip,
-    #[serde(alias = "droid starfighter")]
-    DroidStarfighter,
-    #[serde(alias = "droid tank")]
-    DroidTank,
 }
 
 async fn seed_films(db_pool: &Pool<Postgres>) -> anyhow::Result<()> {
@@ -1700,38 +1232,6 @@ impl From<FilmNested> for Film {
             opening_crawl: value.fields.opening_crawl,
             characters: value.fields.characters,
             species: value.fields.species,
-        }
-    }
-}
-
-#[derive(Copy, Clone, Debug, Deserialize, Type)]
-enum ProducerOrDirector {
-    #[serde(alias = "Gary Kurtz")]
-    GaryKurtz,
-    #[serde(alias = "Rick McCallum")]
-    RickMcCallum,
-    #[serde(alias = "George Lucas")]
-    GeorgeLucas,
-    #[serde(alias = "Irvin Kershner")]
-    IrvinKershner,
-    #[serde(alias = "Howard G. Kazanjian")]
-    HowardGKazanjian,
-    #[serde(alias = "Richard Marquand")]
-    RichardMarquand,
-}
-
-impl FromStr for ProducerOrDirector {
-    type Err = &'static str;
-
-    fn from_str(value: &str) -> Result<Self, Self::Err> {
-        match value {
-            "Gary Kurtz" => Ok(Self::GaryKurtz),
-            "Rick McCallum" => Ok(Self::RickMcCallum),
-            "George Lucas" => Ok(Self::GeorgeLucas),
-            "Irvin Kershner" => Ok(Self::IrvinKershner),
-            "Howard G. Kazanjian" => Ok(Self::HowardGKazanjian),
-            "Richard Marquand" => Ok(Self::RichardMarquand),
-            _ => Err("Unknown producer or director"),
         }
     }
 }
