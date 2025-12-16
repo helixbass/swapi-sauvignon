@@ -1,6 +1,8 @@
 use sauvignon::{
-    schema, CarverOrPopulator, ExternalDependencyValues, IntCarver, InternalDependencyValues,
-    OptionalUnionOrInterfaceTypePopulator, Populator, PopulatorInterface, Schema,
+    enum_optional_string_massager, enum_string_massager, schema, CarverOrPopulator,
+    ExternalDependencyValues, IntCarver, InternalDependencyValues,
+    OptionalUnionOrInterfaceTypePopulator, Populator, PopulatorInterface, PostgresColumnMassager,
+    PostgresDatabase, Schema,
 };
 
 use shared::{
@@ -567,4 +569,89 @@ pub fn get_schema() -> Schema {
             SingleOrRange => [SingleOrRangeSingle, SingleOrRangeRange]
         ]
     }
+}
+
+pub fn get_database() -> PostgresDatabase {
+    PostgresDatabase::new(
+        [
+            ("planet_climates", "climate", enum_string_massager!(Climate)),
+            ("planet_terrains", "terrain", enum_string_massager!(Terrain)),
+            (
+                "species",
+                "classification",
+                enum_optional_string_massager!(SpeciesClassification),
+            ),
+            (
+                "species",
+                "designation",
+                enum_string_massager!(SpeciesDesignation),
+            ),
+            (
+                "species",
+                "language",
+                enum_optional_string_massager!(Language),
+            ),
+            (
+                "species_skin_colors",
+                "skin_color",
+                enum_string_massager!(SkinColor),
+            ),
+            (
+                "species_eye_colors",
+                "eye_color",
+                enum_string_massager!(EyeColor),
+            ),
+            (
+                "species_hair_colors",
+                "hair_color",
+                enum_string_massager!(HairColor),
+            ),
+            ("people", "gender", enum_optional_string_massager!(Gender)),
+            (
+                "person_skin_colors",
+                "skin_color",
+                enum_string_massager!(SkinColor),
+            ),
+            (
+                "person_eye_colors",
+                "eye_color",
+                enum_string_massager!(EyeColor),
+            ),
+            (
+                "person_hair_colors",
+                "hair_color",
+                enum_string_massager!(HairColor),
+            ),
+            (
+                "transport_manufacturers",
+                "manufacturer",
+                enum_string_massager!(Manufacturer),
+            ),
+            (
+                "starships",
+                "starship_class",
+                enum_string_massager!(StarshipClass),
+            ),
+            (
+                "vehicles",
+                "vehicle_class",
+                enum_string_massager!(VehicleClass),
+            ),
+            (
+                "films",
+                "director",
+                enum_string_massager!(ProducerOrDirector),
+            ),
+            (
+                "film_producers",
+                "producer",
+                enum_string_massager!(ProducerOrDirector),
+            ),
+        ]
+        .into_iter()
+        .map(|(table_name, column_name, massager)| {
+            PostgresColumnMassager::new(table_name.to_owned(), column_name.to_owned(), massager)
+        })
+        .collect(),
+    )
 }
