@@ -15,7 +15,7 @@ use shared::{
     get_db_pool, Climate, EyeColor, Gender, HairColor, Language, Manufacturer, ProducerOrDirector,
     SkinColor, SpeciesClassification, SpeciesDesignation, StarshipClass, Terrain, VehicleClass,
 };
-use sqlx::{Pool, Postgres, QueryBuilder, Type};
+use sqlx::{Pool, Postgres, QueryBuilder};
 use squalid::{_d, fancy_regex, regex};
 use tokio::fs::read_to_string;
 
