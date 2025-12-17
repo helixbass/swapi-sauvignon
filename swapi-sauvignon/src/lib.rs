@@ -141,6 +141,7 @@ pub fn get_schema() -> Schema {
                         type => Vehicle
                         through => film_vehicles
                     )
+                    releaseDate => date_column()
                 ]
             }
             Species => {

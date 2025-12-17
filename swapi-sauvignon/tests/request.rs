@@ -464,6 +464,7 @@ async fn test_all_films() {
                 vehicles {
                   vehicleClass
                 }
+                releaseDate
               }
             }
         "#,
@@ -580,6 +581,14 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "WHEELED"
+            );
+            assert_eq!(
+                _q("$.data.allFilms[0].releaseDate", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "1977-05-25"
             );
         },
     )
