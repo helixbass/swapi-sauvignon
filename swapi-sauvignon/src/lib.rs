@@ -4,6 +4,7 @@ use sauvignon::{
     OptionalUnionOrInterfaceTypePopulator, Populator, PopulatorInterface, PostgresColumnMassager,
     PostgresDatabase, Schema,
 };
+use smol_str::SmolStr;
 use sqlx::{Pool, Postgres};
 
 use shared::{
@@ -19,7 +20,7 @@ impl OptionalUnionOrInterfaceTypePopulator for SingleOrRangeTypePopulator {
         &self,
         _external_dependencies: &ExternalDependencyValues,
         internal_dependencies: &InternalDependencyValues,
-    ) -> Option<String> {
+    ) -> Option<SmolStr> {
         internal_dependencies
             .get("crew_start")
             .unwrap()
@@ -30,8 +31,8 @@ impl OptionalUnionOrInterfaceTypePopulator for SingleOrRangeTypePopulator {
                 .unwrap()
                 .maybe_non_optional()
             {
-                None => "SingleOrRangeSingle".to_owned(),
-                Some(_) => "SingleOrRangeRange".to_owned(),
+                None => "SingleOrRangeSingle".into(),
+                Some(_) => "SingleOrRangeRange".into(),
             },
         )
     }
@@ -60,11 +61,11 @@ impl PopulatorInterface for SingleOrRangePopulator {
             .maybe_non_optional()
         {
             Some(crew_end) => {
-                ret.insert("start".to_owned(), crew_start.clone()).unwrap();
-                ret.insert("end".to_owned(), crew_end.clone()).unwrap();
+                ret.insert("start".into(), crew_start.clone()).unwrap();
+                ret.insert("end".into(), crew_end.clone()).unwrap();
             }
             None => {
-                ret.insert("value".to_owned(), crew_start.clone()).unwrap();
+                ret.insert("value".into(), crew_start.clone()).unwrap();
             }
         }
         ret
@@ -141,6 +142,7 @@ pub fn get_schema() -> Schema {
                         type => Vehicle
                         through => film_vehicles
                     )
+                    releaseDate => date_column()
                 ]
             }
             Species => {
@@ -456,7 +458,7 @@ pub fn get_schema() -> Schema {
                     value => {
                         type => Int!
                         carver => custom {
-                            CarverOrPopulator::Carver(Box::new(IntCarver::new("value".to_owned())))
+                            CarverOrPopulator::Carver(Box::new(IntCarver::new("value".into())))
                         }
                     }
                 ]
@@ -466,13 +468,13 @@ pub fn get_schema() -> Schema {
                     start => {
                         type => Int!
                         carver => custom {
-                            CarverOrPopulator::Carver(Box::new(IntCarver::new("start".to_owned())))
+                            CarverOrPopulator::Carver(Box::new(IntCarver::new("start".into())))
                         }
                     }
                     end => {
                         type => Int!
                         carver => custom {
-                            CarverOrPopulator::Carver(Box::new(IntCarver::new("end".to_owned())))
+                            CarverOrPopulator::Carver(Box::new(IntCarver::new("end".into())))
                         }
                     }
                 ]
@@ -652,7 +654,7 @@ pub fn get_database(db_pool: Pool<Postgres>) -> PostgresDatabase {
         ]
         .into_iter()
         .map(|(table_name, column_name, massager)| {
-            PostgresColumnMassager::new(table_name.to_owned(), column_name.to_owned(), massager)
+            PostgresColumnMassager::new(table_name.into(), column_name.into(), massager)
         })
         .collect(),
     )
