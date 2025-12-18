@@ -2565,6 +2565,7 @@ dependencies = [
  "serde_json",
  "serde_json_path",
  "shared",
+ "smol_str",
  "sqlx",
  "strum",
  "tokio",
