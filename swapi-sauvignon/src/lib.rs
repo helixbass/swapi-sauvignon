@@ -312,14 +312,22 @@ pub fn get_schema() -> Schema {
                             foreign_key => id
                         }
                     )
-                    // manufacturers => has_many(
-                    //     type => Manufacturer
-                    //     through => transport_manufacturers
-                    //     via_nested => {
-                    //         table_name => transports
-                    //         foreign_key => id
-                    //     }
-                    // )
+                    manufacturers => has_many(
+                        type => Manufacturer
+                        through => {
+                            table_name => transport_manufacturers
+                            self_foreign_key => transport_id
+                        }
+                        // TODO: this is only unnecessary b/c
+                        // we happen to use vehicles.id = transports.id
+                        // as the nested join "same column"/foreign key,
+                        // so should in theory support "normal" via_nested
+                        // + through has_many combination?
+                        // via_nested => {
+                        //     table_name => transports
+                        //     foreign_key => id
+                        // }
+                    )
                     maxAtmospheringSpeed => optional_int_column(
                         via_nested => {
                             table_name => transports
