@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
 
     axum::serve(
         TcpListener::bind("0.0.0.0:3001").await?,
-        simple_app(Arc::new(schema), Arc::new(database)),
+        simple_app(Arc::new(schema), Arc::new(database.into())),
     )
     .await?;
 

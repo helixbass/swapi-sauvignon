@@ -1,4 +1,4 @@
-use sauvignon::json_from_response;
+use sauvignon::{json_from_response, Database};
 use serde_json_path::{JsonPath, NodeList};
 use swapi_sauvignon::{get_database, get_schema};
 
@@ -6,7 +6,7 @@ use shared::get_db_pool;
 
 async fn request_test(request: &str, expected: impl FnOnce(&serde_json::Value)) {
     let db_pool = get_db_pool().await.unwrap();
-    let database = get_database(db_pool);
+    let database: Database = get_database(db_pool).into();
     let schema = get_schema();
     let response = schema.request(request, &database).await;
     let json = json_from_response(&response);
