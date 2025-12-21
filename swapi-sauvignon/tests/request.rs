@@ -454,7 +454,7 @@ async fn test_all_films() {
                 planets {
                   name
                 }
-                # producers
+                producers
                 species {
                   name
                 }
@@ -546,15 +546,6 @@ async fn test_all_films() {
                     .unwrap(),
                 "Tatooine"
             );
-            // assert_eq!(_q("$.data.allFilms[0].producers.*", response).len(), 2);
-            // assert_eq!(
-            //     _q("$.data.allFilms[0].producers[0]", response)
-            //         .exactly_one()
-            //         .unwrap()
-            //         .as_str()
-            //         .unwrap(),
-            //     "GARY_KURTZ"
-            // );
             assert_eq!(_q("$.data.allFilms[0].species.*", response).len(), 5);
             assert_eq!(
                 _q("$.data.allFilms[0].species[0].name", response)
@@ -589,6 +580,15 @@ async fn test_all_films() {
                     .as_str()
                     .unwrap(),
                 "1977-05-25"
+            );
+            assert_eq!(_q("$.data.allFilms[0].producers.*", response).len(), 2);
+            assert_eq!(
+                _q("$.data.allFilms[0].producers[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "GARY_KURTZ"
             );
         },
     )
@@ -862,6 +862,7 @@ async fn test_all_starships() {
                 model
                 name
                 passengers
+                manufacturers
               }
             }
         "#,
@@ -1121,6 +1122,30 @@ async fn test_all_starships() {
                     .unwrap(),
                 ()
             );
+            assert_eq!(
+                _q("$.data.allStarships[0].manufacturers", response).len(),
+                1
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].manufacturers[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "CORELLIAN_ENGINEERING_CORPORATION"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[2].manufacturers.*", response).len(),
+                2
+            );
+            assert_eq!(
+                _q("$.data.allStarships[2].manufacturers[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "SIENAR_FLEET_SYSTEMS"
+            );
         },
     )
     .await;
@@ -1160,6 +1185,7 @@ async fn test_all_vehicles() {
                 model
                 name
                 passengers
+                manufacturers
               }
             }
         "#,
@@ -1354,6 +1380,27 @@ async fn test_all_vehicles() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(_q("$.data.allVehicles[0].manufacturers", response).len(), 1);
+            assert_eq!(
+                _q("$.data.allVehicles[0].manufacturers[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "CORELLIA_MINING_CORPORATION"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[6].manufacturers.*", response).len(),
+                2
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[6].manufacturers[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "KUAT_DRIVE_YARDS"
             );
         },
     )
