@@ -575,6 +575,7 @@ pub fn get_schema() -> Schema {
             StarshipClass,
             VehicleClass,
             Gender,
+            Manufacturer,
         ]
         unions => [
             SingleOrRange => [SingleOrRangeSingle, SingleOrRangeRange]

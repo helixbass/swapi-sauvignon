@@ -862,6 +862,7 @@ async fn test_all_starships() {
                 model
                 name
                 passengers
+                manufacturers
               }
             }
         "#,
@@ -1120,6 +1121,30 @@ async fn test_all_starships() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].manufacturers", response).len(),
+                1
+            );
+            assert_eq!(
+                _q("$.data.allStarships[0].manufacturers[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "CORELLIAN_ENGINEERING_CORPORATION"
+            );
+            assert_eq!(
+                _q("$.data.allStarships[2].manufacturers.*", response).len(),
+                2
+            );
+            assert_eq!(
+                _q("$.data.allStarships[2].manufacturers[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "SIENAR_FLEET_SYSTEMS"
             );
         },
     )
