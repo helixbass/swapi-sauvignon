@@ -427,14 +427,13 @@ pub fn get_schema() -> Schema {
                             foreign_key => id
                         }
                     )
-                    // manufacturers => has_many(
-                    //     type => Manufacturer
-                    //     through => transport_manufacturers
-                    //     via_nested => {
-                    //         table_name => transports
-                    //         foreign_key => id
-                    //     }
-                    // )
+                    manufacturers => has_many(
+                        type => Manufacturer
+                        through => {
+                            table_name => transport_manufacturers
+                            self_foreign_key => transport_id
+                        }
+                    )
                     maxAtmospheringSpeed => optional_int_column(
                         via_nested => {
                             table_name => transports

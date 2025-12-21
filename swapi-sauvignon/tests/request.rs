@@ -1185,6 +1185,7 @@ async fn test_all_vehicles() {
                 model
                 name
                 passengers
+                manufacturers
               }
             }
         "#,
@@ -1379,6 +1380,27 @@ async fn test_all_vehicles() {
                     .as_null()
                     .unwrap(),
                 ()
+            );
+            assert_eq!(_q("$.data.allVehicles[0].manufacturers", response).len(), 1);
+            assert_eq!(
+                _q("$.data.allVehicles[0].manufacturers[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "CORELLIA_MINING_CORPORATION"
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[6].manufacturers.*", response).len(),
+                2
+            );
+            assert_eq!(
+                _q("$.data.allVehicles[6].manufacturers[0]", response)
+                    .exactly_one()
+                    .unwrap()
+                    .as_str()
+                    .unwrap(),
+                "KUAT_DRIVE_YARDS"
             );
         },
     )
