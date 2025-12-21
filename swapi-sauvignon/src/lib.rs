@@ -126,10 +126,13 @@ pub fn get_schema() -> Schema {
                         type => Planet
                         through => film_planets
                     )
-                    // producers => has_many(
-                    //     type => ProducerOrDirector
-                    //     through => film_producers
-                    // )
+                    producers => has_many(
+                        type => ProducerOrDirector
+                        through => {
+                            table_name => film_producers
+                            other_foreign_key => producer
+                        }
+                    )
                     species => has_many(
                         type => Species
                         through => film_species
